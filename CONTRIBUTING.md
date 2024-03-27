@@ -40,7 +40,7 @@ If you are proposing a feature:
 
 ## Get Started!
 
-Ready to contribute? Here's how to set up `resumeanalyser` for local development.
+Ready to contribute? Here's how to set up `Vancouver Housing Prices Dashboard` for local development.
 
 1. Use `git` (or similar) to create a branch for local development and make your changes:
 
