@@ -1,5 +1,10 @@
 # Milestone 1 - Dashboard Proposal
 
+## Section 1: Motivation and Purpose
+Vancouver's housing market has been a major topic of discussion and in many cases a limitation, especially for people looking to move to one of Canada's largest and most scenic cities. As the housing prices rise, students and other newcomers to Vancouver are finding it more and more difficult to find affordable accomodations.
+
+This dashboard offers an interactive platform for people who are looking to move to Vancouver. An interactive map of the city shows the appraised value of homes accross the city, giving the user an idea of which neighborhoods fall within their price-range. View historical data to see housing price trends broken down by size, neighborhood, and other important factors in considering a home. By visualizing breakdowns of the housing market in Vancouver, we hope to make renting or buying in Vancouver a much less daunting task.
+
 ## Section 2 Description of the data
 
 Our project will focus on visualizing a comprehensive dataset obtained from the City of Vancouver's Open Data Portal. This dataset consists of seven main dataframes, each corresponding to property tax records for the years 2014 to 2020. Notably, the most recent dataframe (tax_2020) is still being updated and comprises 213,709 rows, while the others, ranging from 2014 to 2019, contain a static number of rows, varying from 200,925 to 213,182. Each dataframe includes 29 columns that provide detailed information about properties in Vancouver.
