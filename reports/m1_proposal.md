@@ -1,9 +1,9 @@
 # Milestone 1 - Dashboard Proposal
 
 ## Section 1: Motivation and Purpose
-Vancouver's housing market has been a major topic of discussion and in many cases a limitation, especially for people looking to move to one of Canada's largest and most scenic cities. As the housing prices rise, students and other newcomers to Vancouver are finding it more and more difficult to find affordable accomodations.
+Vancouver's housing market has been a major topic of discussion, as the price of housing and accomodations as skyrocketed over the past few years. The rise of houses prices has become a limitation to many hoping or move to or visit Vancouver, one of Canada's largest and most scenic cities. 
 
-This dashboard offers an interactive platform for people who are looking to move to Vancouver. An interactive map of the city shows the appraised value of homes accross the city, giving the user an idea of which neighborhoods fall within their price-range. View historical data to see housing price trends broken down by size, neighborhood, and other important factors in considering a home. By visualizing breakdowns of the housing market in Vancouver, we hope to make renting or buying in Vancouver a much less daunting task.
+This dashboard offers an interactive platform for people who are looking to move to or visit Vancouver. An interactive map of the city shows the Airbnb listing prices of homes across the city, giving the user an idea of which neighborhoods fall could within their price-range, either to stay in or to rent. Visualizations of historical data from the past five years shine light onto the housing price trends broken down by size, neighborhood, and other important factors in considering a home. By visualizing breakdowns of the housing market in Vancouver, we hope to make renting ,buying, or staying in Vancouver a much less daunting task.
 
 ## Section 2 Description of the data
 
