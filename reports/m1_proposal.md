@@ -1,17 +1,20 @@
 # Milestone 1 - Dashboard Proposal
 
 ## Section 2 Description of the data
+Our project will delve into a detailed dataset representing the housing market in Strathcona County, Edmonton, covering the period from 2017 to the present. The initial part of this dataset, focusing on the year 2017, is based on property valuations as of July 1, 2017, and conditions as of December 31, 2017. It's crucial to note that while this data is provided by Strathcona County, the accuracy of the information isn't guaranteed, nor does the County accept liability for its use.
 
-Our project will focus on visualizing a comprehensive dataset obtained from the City of Vancouver's Open Data Portal. This dataset consists of seven main dataframes, each corresponding to property tax records for the years 2014 to 2020. Notably, the most recent dataframe (tax_2020) is still being updated and comprises 213,709 rows, while the others, ranging from 2014 to 2019, contain a static number of rows, varying from 200,925 to 213,182. Each dataframe includes 29 columns that provide detailed information about properties in Vancouver.
+The dataset spans several years and encompasses a variety of key variables that are instrumental in portraying the diverse aspects of residential properties in Strathcona County. These variables are grouped into several categories:
 
-We will concentrate on several key variables that could offer valuable insights into property trends in Vancouver. The data includes both categorical and numerical types, such as:
+1. Property Identification and Financial Data: This includes tax_year, roll_num (a unique property identifier), and assessment (the property's assessed value for taxation).
 
-Property identification variables like pid, legal_type, land_coordinate, and zone_name.
-Descriptive location information including street_name, block, district_lot, and neighbourhood_code.
-Financial variables such as current_land_value, current_improvement_value, previous_land_value, and tax_levy.
-Temporal variables like year_built, big_improvement_year, and tax_assessment_year.
-To enhance our analysis, we plan to engineer a new variable, property_age, calculated as the difference between the current year and the year_built. This variable will allow us to examine trends in property values relative to the age of the properties.
+2. Property Characteristics: Detailed descriptions are offered through address, year_built, assessclas (assessment classification), bldg_desc (building description), and measurements like bldg_metre and bldg_feet.
 
-While the dataset is robust, additional information on recent sale prices or frequency of property transactions would have further enriched our analysis, allowing us to understand the real estate market's dynamics better. However, given the dataset's current structure, our focus will be on uncovering patterns and trends in property assessments and tax levies over the years, which can provide valuable insights for potential investors, city planners, and residents of Vancouver.
+3. Additional Features: Characteristics such as the presence of a garage, fireplace, and basement, as well as basement development status (bsmtdevl), are included.
 
-Our exploratory data analysis (EDA) will be shared in our GitHub repository. This analysis will help us identify the most relevant variables and patterns for a more focused and impactful visualization effort.
+4. Geographical Data: The dataset contains latitude and longitude for spatial analysis, highlighting the exact geographical location of each property in Strathcona County.
+
+We intend to engineer a variable, property_age, derived by subtracting the year_built from the current year, to assess the impact of property age on its value.
+
+While the dataset provides extensive insights into Strathcona County's housing market, additional data like recent sales prices or transaction frequency could further enrich our analysis. Our focus, however, will remain on evaluating property characteristics and assessment trends over the years, offering vital insights for homebuyers, real estate investors, and urban planners in Strathcona County.
+
+Our exploratory data analysis (EDA) will identify key variables and trends for a focused and meaningful visualization. The results of this analysis, along with our visualizations, will be collated and shared in a GitHub repository for detailed examination and collaborative study.

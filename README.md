@@ -1,2 +1,2 @@
-# DSCI-532_2024_18_VancouverHousingPrices
-A dashboard for investigating Vancouver housing prices
+# DSCI-532_2024_18_EdmontonHousingPrices
+A dashboard for investigating Edmonton housing prices
