@@ -1,17 +1,25 @@
 # Milestone 1 - Dashboard Proposal
 
 ## Section 2 Description of the data
-Our project will delve into a detailed dataset representing the housing market in Strathcona County, Edmonton, covering the period from 2017 to the present. The initial part of this dataset, focusing on the year 2017, is based on property valuations as of July 1, 2017, and conditions as of December 31, 2017. It's crucial to note that while this data is provided by Strathcona County, the accuracy of the information isn't guaranteed, nor does the County accept liability for its use.
+The project will analyze an expansive dataset covering eight years of Airbnb listings in Vancouver. The dataset currently comprises approximately 215,000 rows, derived from an estimated 6,690 rows (see the latest quarterly sample, data/raw/listings.csv) for each of the four quarters spanning eight years; this number is still pending final approval. Of the 75 columns available in the dataset, a preliminary selection of 25 columns has been made for initial analysis, with the final choice of columns to be determined as the project progresses. This collection of data will feed into a user-centric dashboard designed to illuminate the shifting dynamics of the local short-term rental market.
 
-The dataset spans several years and encompasses a variety of key variables that are instrumental in portraying the diverse aspects of residential properties in Strathcona County. These variables are grouped into several categories:
+The dashboard will provide interactive features for users to filter and analyze Airbnb listings based on diverse criteria:
 
-1. Property Identification and Financial Data: This includes tax_year, roll_num (a unique property identifier), and assessment (the property's assessed value for taxation).
+1. Geographical Insights: With an interactive map at the forefront, users can pinpoint specific neighborhoods to observe pricing trends, leveraging variables such as `latitude`, `longitude`, and `neighbourhood_cleansed`.
 
-2. Property Characteristics: Detailed descriptions are offered through address, year_built, assessclas (assessment classification), bldg_desc (building description), and measurements like bldg_metre and bldg_feet.
+2. Detailed Listings and Host Profiles: The dashboard will showcase individual listing details, including `id`, `name`, `description`, and `picture_url`, as well as comprehensive host information, from `host_since` and `host_is_superhost` status to `host_response_rate` and `host_identity_verified`. This offers a granular view of the listings and their hosts' track record.
 
-3. Additional Features: Characteristics such as the presence of a garage, fireplace, and basement, as well as basement development status (bsmtdevl), are included.
+3. Property Features and Amenities: Users can sift through properties based on features like `property_type`, `room_type`, `bedrooms`, `beds`, and `amenities`, providing a tailored search experience that matches specific accommodation needs.
 
-Our exploratory data analysis (EDA) will be shared in our GitHub repository. This analysis will help us identify the most relevant variables and patterns for a more focused and impactful visualization effort.
+4. Pricing Analysis and Predictions: Critical for both guests and hosts, the dashboard will render current pricing information and provide predictive insights for future price trends. Factors like `price`, `minimum_nights`, and `maximum_nights` will be instrumental in this area.
+
+5. Review Score Analytics: The dashboard will highlight guest feedback through `review_scores_rating` and related metrics, influencing decision-making for potential renters and indicating areas of improvement for hosts.
+
+6. Usage and Popularity Metrics: Key statistics such as `number_of_reviews` and `reviews_per_month` will gauge listing popularity and guest satisfaction, vital for market analysis.
+
+In addition to these features, we will derive new variables to deepen our understanding of the market. For instance, `price_per_guest` will offer insights into value propositions across listings, while `host_duration` will assess the impact of hosting experience on listing success.
+
+The dashboard will serve as a portal not just for observation but also for the prediction of rent prices, leveraging historical data to forecast future trends, with the 'Email Me' feature providing users with a direct line to receive personalized updates.
 
 ## Section 3 Research questions and usage scenarios
 
