@@ -6,17 +6,30 @@ Vancouver's housing market has been a major topic of discussion, as the price of
 This dashboard offers an interactive platform for people who are looking to move to or visit Vancouver. An interactive map of the city shows the Airbnb listing prices of homes across the city, giving the user an idea of which neighborhoods fall could within their price-range, either to stay in or to rent. Visualizations of historical data from the past five years shine light onto the housing price trends broken down by size, neighborhood, and other important factors in considering a home. By visualizing breakdowns of the housing market in Vancouver, we hope to make renting ,buying, or staying in Vancouver a much less daunting task.
 
 ## Section 2 Description of the data
+The project will analyze an expansive dataset covering eight years of Airbnb listings in Vancouver. The dataset currently comprises approximately 215,000 rows, derived from an estimated 6,690 rows (see the latest quarterly sample, data/raw/listings.csv) for each of the four quarters spanning eight years; this number is still pending final approval. Of the 75 columns available in the dataset, a preliminary selection of 25 columns has been made for initial analysis, with the final choice of columns to be determined as the project progresses. This collection of data will feed into a user-centric dashboard designed to illuminate the shifting dynamics of the local short-term rental market.
 
-Our project will focus on visualizing a comprehensive dataset obtained from the City of Vancouver's Open Data Portal. This dataset consists of seven main dataframes, each corresponding to property tax records for the years 2014 to 2020. Notably, the most recent dataframe (tax_2020) is still being updated and comprises 213,709 rows, while the others, ranging from 2014 to 2019, contain a static number of rows, varying from 200,925 to 213,182. Each dataframe includes 29 columns that provide detailed information about properties in Vancouver.
+The dashboard will provide interactive features for users to filter and analyze Airbnb listings based on diverse criteria:
 
-We will concentrate on several key variables that could offer valuable insights into property trends in Vancouver. The data includes both categorical and numerical types, such as:
+1. Geographical Insights: With an interactive map at the forefront, users can pinpoint specific neighborhoods to observe pricing trends, leveraging variables such as `latitude`, `longitude`, and `neighbourhood_cleansed`.
 
-Property identification variables like pid, legal_type, land_coordinate, and zone_name.
-Descriptive location information including street_name, block, district_lot, and neighbourhood_code.
-Financial variables such as current_land_value, current_improvement_value, previous_land_value, and tax_levy.
-Temporal variables like year_built, big_improvement_year, and tax_assessment_year.
-To enhance our analysis, we plan to engineer a new variable, property_age, calculated as the difference between the current year and the year_built. This variable will allow us to examine trends in property values relative to the age of the properties.
+2. Detailed Listings and Host Profiles: The dashboard will showcase individual listing details, including `id`, `name`, `description`, and `picture_url`, as well as comprehensive host information, from `host_since` and `host_is_superhost` status to `host_response_rate` and `host_identity_verified`. This offers a granular view of the listings and their hosts' track record.
 
-While the dataset is robust, additional information on recent sale prices or frequency of property transactions would have further enriched our analysis, allowing us to understand the real estate market's dynamics better. However, given the dataset's current structure, our focus will be on uncovering patterns and trends in property assessments and tax levies over the years, which can provide valuable insights for potential investors, city planners, and residents of Vancouver.
+3. Property Features and Amenities: Users can sift through properties based on features like `property_type`, `room_type`, `bedrooms`, `beds`, and `amenities`, providing a tailored search experience that matches specific accommodation needs.
 
-Our exploratory data analysis (EDA) will be shared in our GitHub repository. This analysis will help us identify the most relevant variables and patterns for a more focused and impactful visualization effort.
+4. Pricing Analysis and Predictions: Critical for both guests and hosts, the dashboard will render current pricing information and provide predictive insights for future price trends. Factors like `price`, `minimum_nights`, and `maximum_nights` will be instrumental in this area.
+
+5. Review Score Analytics: The dashboard will highlight guest feedback through `review_scores_rating` and related metrics, influencing decision-making for potential renters and indicating areas of improvement for hosts.
+
+6. Usage and Popularity Metrics: Key statistics such as `number_of_reviews` and `reviews_per_month` will gauge listing popularity and guest satisfaction, vital for market analysis.
+
+In addition to these features, we will derive new variables to deepen our understanding of the market. For instance, `price_per_guest` will offer insights into value propositions across listings, while `host_duration` will assess the impact of hosting experience on listing success.
+
+The dashboard will serve as a portal not just for observation but also for the prediction of rent prices, leveraging historical data to forecast future trends, with the 'Email Me' feature providing users with a direct line to receive personalized updates.
+
+## Section 3 Research questions and usage scenarios
+
+Sofia is an airbnb host who wants to obtain the optimal price for her Vancouver airbnb property. She would like to [explore] the prices and features of other properties, [compare] her property to similar listings, and [predict] the price of a new listing.
+
+Sofia can assess this by using our "Vancouver Airbnb Listings" dashboard. She can begin by using the map function to view the Vancouver neighbourhoods and the number of listings in each. Then she can use the dropdown filters to focus her comparison on specific types of properties, she can filter for the values: number of bedrooms, number of bathrooms, number of people to accomodate, neighbourhood, and type of property. She can also use the slider to select a range of prices. This will display the most current summary statistics for properties meeting the selected criteria. From this she can compare her listing to other similar airbnb properties. She can also use the line chart of listing values across time (available dates are quarterly for 2023) to visualize the most recent trends in listing prices. This will help her price her listing effectively, as she can adjust to the changing market.
+
+Additionally, if Sofia goes to the second page of our dashboard, she can use our predictive model to estimate the price range for a new listing. To do this she would select the values that match her new property from the dropdown menu and click the 'predict' button. This would then return the predicted price range of properties matching these criteria. This would help Sofia find an appropriate price for her new new airbnb listing, making it attractive to people looking to book airbnbs in Vancouver.
