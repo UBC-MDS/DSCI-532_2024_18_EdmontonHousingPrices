@@ -1,5 +1,10 @@
 # Milestone 1 - Dashboard Proposal
 
+## Section 1: Motivation and Purpose
+Vancouver's housing market has been a major topic of discussion, as the price of housing and accomodations as skyrocketed over the past few years. The rise of houses prices has become a limitation to many hoping or move to or visit Vancouver, one of Canada's largest and most scenic cities. 
+
+This dashboard offers an interactive platform for people who are looking to move to or visit Vancouver. An interactive map of the city shows the Airbnb listing prices of homes across the city, giving the user an idea of which neighborhoods fall could within their price-range, either to stay in or to rent. Visualizations of historical data from the past five years shine light onto the housing price trends broken down by size, neighborhood, and other important factors in considering a home. By visualizing breakdowns of the housing market in Vancouver, we hope to make renting ,buying, or staying in Vancouver a much less daunting task.
+
 ## Section 2 Description of the data
 The project will analyze an expansive dataset covering eight years of Airbnb listings in Vancouver. The dataset currently comprises approximately 215,000 rows, derived from an estimated 6,690 rows (see the latest quarterly sample, data/raw/listings.csv) for each of the four quarters spanning eight years; this number is still pending final approval. Of the 75 columns available in the dataset, a preliminary selection of 25 columns has been made for initial analysis, with the final choice of columns to be determined as the project progresses. This collection of data will feed into a user-centric dashboard designed to illuminate the shifting dynamics of the local short-term rental market.
 
