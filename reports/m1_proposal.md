@@ -33,3 +33,23 @@ Sofia is an airbnb host who wants to obtain the optimal price for her Vancouver 
 Sofia can assess this by using our "Vancouver Airbnb Listings" dashboard. She can begin by using the map function to view the Vancouver neighbourhoods and the number of listings in each. Then she can use the dropdown filters to focus her comparison on specific types of properties, she can filter for the values: number of bedrooms, number of bathrooms, number of people to accomodate, neighbourhood, and type of property. She can also use the slider to select a range of prices. This will display the most current summary statistics for properties meeting the selected criteria. From this she can compare her listing to other similar airbnb properties. She can also use the line chart of listing values across time (available dates are quarterly for 2023) to visualize the most recent trends in listing prices. This will help her price her listing effectively, as she can adjust to the changing market.
 
 Additionally, if Sofia goes to the second page of our dashboard, she can use our predictive model to estimate the price range for a new listing. To do this she would select the values that match her new property from the dropdown menu and click the 'predict' button. This would then return the predicted price range of properties matching these criteria. This would help Sofia find an appropriate price for her new new airbnb listing, making it attractive to people looking to book airbnbs in Vancouver.
+
+## Section 3 App Sketch & Breif Descriptions
+![image](../img/sketch_milestone1.png)
+
+#### Landing Page
+This app comprises two pages (tabs), with one serving as the main page, named **Observation**. Here, users can access current listings and apply filters based on listing locations, features, and customize their searches as desired.
+
+##### Observation Page Components:
+Components are described according to their numbering in the image above.
+1. **Map**: This interactive map showcases a segment of Vancouver, highlighting Airbnb listings as dots. Listings are color-coded based on their location, utilizing the `neighborhood` column from the data. Additionally, a slider feature allows users to view listings over a specified time period, ranging from a few years back to the most recent date available in our dataset.
+2. **Filter By**: This side menu offers users the flexibility to select specific filters for their search criteria. If no filters are selected, the search results remain unfiltered, displaying the entire dataset on the map alongside summary statistics and visualizations on the right-hand side. Initial filter options include `neighborhood`, `accommodates`, `bedrooms`, and `review_scores_rating`, with the possibility of adding more filter options in the future.
+3. **Summary Statistics**: Based on the user-selected filters, summary statistics of the filtered listings are presented. For instance, average price per night for the filtered listings, along with 25th and 75th percentiles, are provided. Additionally, visualizations depicting price trends in the area over the past five years (approximately) are included for enhanced insights.
+
+#### Prediction Page
+The second page, named **Prediction**, will feature the implementation of a simple machine learning model to predict the expected rating price based on the provided feature values by the users.
+
+##### Prediction Page Components:
+Components are described based on their numbering in the image above.
+4. **Predicted Price**: This section displays the predicted price of an unseen listing generated from the selected user options. In case a value is not selected for one of the options, appropriate imputation methods will be applied to handle missing values (further details to be discussed).
+5. **Send Email**: If desired, users have the option to receive an email containing the selected options and the predicted price for the new listing per night.
