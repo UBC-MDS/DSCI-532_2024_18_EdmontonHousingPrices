@@ -3,4 +3,3 @@ A dashboard for investigating Vancouver housing price trends through Airbnb hous
 
 Group members: Jenny Lee, Wenyu Nie,Ella Hein, Kiersten Gilberg
 
-
