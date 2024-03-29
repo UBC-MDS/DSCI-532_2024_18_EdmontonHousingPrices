@@ -11,10 +11,12 @@ The dataset spans several years and encompasses a variety of key variables that 
 
 3. Additional Features: Characteristics such as the presence of a garage, fireplace, and basement, as well as basement development status (bsmtdevl), are included.
 
-4. Geographical Data: The dataset contains latitude and longitude for spatial analysis, highlighting the exact geographical location of each property in Strathcona County.
+Our exploratory data analysis (EDA) will be shared in our GitHub repository. This analysis will help us identify the most relevant variables and patterns for a more focused and impactful visualization effort.
 
-We intend to engineer a variable, property_age, derived by subtracting the year_built from the current year, to assess the impact of property age on its value.
+## Section 3 Research questions and usage scenarios
 
-While the dataset provides extensive insights into Strathcona County's housing market, additional data like recent sales prices or transaction frequency could further enrich our analysis. Our focus, however, will remain on evaluating property characteristics and assessment trends over the years, offering vital insights for homebuyers, real estate investors, and urban planners in Strathcona County.
+Sofia is an airbnb host who wants to obtain the optimal price for her Vancouver airbnb property. She would like to [explore] the prices and features of other properties, [compare] her property to similar listings, and [predict] the price of a new listing.
 
-Our exploratory data analysis (EDA) will identify key variables and trends for a focused and meaningful visualization. The results of this analysis, along with our visualizations, will be collated and shared in a GitHub repository for detailed examination and collaborative study.
+Sofia can assess this by using our "Vancouver Airbnb Listings" dashboard. She can begin by using the map function to view the Vancouver neighbourhoods and the number of listings in each. Then she can use the dropdown filters to focus her comparison on specific types of properties, she can filter for the values: number of bedrooms, number of bathrooms, number of people to accomodate, neighbourhood, and type of property. She can also use the slider to select a range of prices. This will display the most current summary statistics for properties meeting the selected criteria. From this she can compare her listing to other similar airbnb properties. She can also use the line chart of listing values across time (available dates are quarterly for 2023) to visualize the most recent trends in listing prices. This will help her price her listing effectively, as she can adjust to the changing market.
+
+Additionally, if Sofia goes to the second page of our dashboard, she can use our predictive model to estimate the price range for a new listing. To do this she would select the values that match her new property from the dropdown menu and click the 'predict' button. This would then return the predicted price range of properties matching these criteria. This would help Sofia find an appropriate price for her new new airbnb listing, making it attractive to people looking to book airbnbs in Vancouver.
