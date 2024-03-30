@@ -41,7 +41,7 @@ Additionally, if Sofia goes to the second page of our dashboard, she can use our
 This app comprises two pages (tabs), with one serving as the main page, named **Observation**. Here, users can access current listings and apply filters based on listing locations, features, and customize their searches as desired.
 
 #### Prediction Page
-The second page, named **Prediction**, will feature the implementation of a simple machine learning model to predict the expected rating price based on the provided feature values by the users.
+The second page, named **Prediction**, will feature the implementation of a simple machine learning model to predict the expected price per night based on the provided feature values.
 
 ##### ▸ Page Components:
 Components are described according to their numbering in the image above.
