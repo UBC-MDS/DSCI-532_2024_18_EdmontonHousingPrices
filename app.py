@@ -7,3 +7,5 @@ app = dash.Dash(__name__,
                 title="Vancouver AirBnB Listings",
                 pages_folder="pages",
                 suppress_callback_exceptions=True)
+
+server = app.server
