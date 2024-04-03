@@ -78,7 +78,7 @@ sidebar = html.Div([
 
               dbc.Row([
                     dbc.Col([
-                          html.Label("Price Range:", style={"color": "black"}),
+                          html.Label("Price Range (CAD):", style={"color": "black"}),
                           dcc.RangeSlider(min(df["price_adjusted"]), 
                                           max(df["price_adjusted"]), 
                                           10, 
@@ -147,7 +147,7 @@ tab1_content = dbc.Card(
                         sort_mode="single")
             ])
         ])
-    )
+    ), style={"margin-top":"10px"}
 )
 
 tab2_content = dbc.Card(
@@ -165,7 +165,7 @@ maindiv = html.Div(
     id="first-div",
     children=[
         html.Div([
-            html.H4("Navigate"),
+            html.H4("Available Listings"),
         html.Hr(),
         dbc.Card([
         dbc.CardHeader(
@@ -252,33 +252,3 @@ def get_location(neighbourhood_dropdown,
         df_filtered = df_filtered[df_filtered["bathroom_adjusted"] == num_bathrooms_dropdown]
     
     return df_filtered.to_dict("records")
-    
-# @app.callback(Output('tabs_content', 'children'),
-#               Input('tabs_main', 'value'))
-# def get_tab_content(tab):
-#     if tab == "tab-1":
-#         return dash_table.DataTable(
-#                         style_table={'overflowX': 'auto'},
-#                         id="filtered_df",
-#                         data=df.to_dict("records"),
-#                         columns=[{'id': c, 'name': c} for c in df.columns],
-#                         page_size=5,
-#                         style_cell_conditional=[
-#                             {
-#                                 'if': {'column_id': c},
-#                                 'textAlign': 'left'
-#                             } for c in ['Date', 'Region']
-#                         ],
-#                         style_as_list_view=True,
-#                         editable=True,
-#                         sort_action="native",
-#                         style_header={"backgroundColor": "#d85e30",
-#                                       "fontweight": "bold", "color": "black",
-#                                       "font_size": "14px"},
-#                         style_cell={"font_family": "arial",
-#                                     "font_size": "12px",
-#                                     "text_align": "left"},
-#                         style_data={'backgroundColor': 'transparent'},
-#                         sort_mode="single")
-#     elif tab == "tab-2":
-#         return dcc.Graph(figure=fig)
