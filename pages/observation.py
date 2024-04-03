@@ -12,6 +12,8 @@ from dash import Dash, html, dcc, dash_table, ctx
 from dash import callback_context
 import numpy as np
 
+# from functions.visualization import map_fig
+
 import plotly.graph_objects as go
 
 import pandas as pd
@@ -23,7 +25,7 @@ dash.register_page(__name__, path="/", title="Observation")
 df = pd.read_csv("data/raw/listings.csv")
 df = df[df["host_location"] == "Vancouver, Canada"]
 df.dropna(subset=['host_location', 'price', 'bathrooms_text'], inplace=True)
-df = df[["neighbourhood_cleansed", "accommodates", "price", "room_type", "beds", "bathrooms_text"]]
+df = df[["neighbourhood_cleansed", "accommodates", "price", "room_type", "beds", "bathrooms_text", "quarter"]]
 
 df["price_adjusted"] = df["price"].str.extract(r'([0-9.]+)', expand = False).astype(float)
 df["bathroom_adjusted"] = df["bathrooms_text"].str.extract(r'([0-9.]+)', expand = False).astype(float)
@@ -45,6 +47,15 @@ sidebar = html.Div([
         html.H4("Apply Filter", style={"margin-left": "14px"}),
         html.Hr(),
         dbc.Container([
+            dbc.Row([
+                dbc.Col([
+                    html.Label("Select Periods:", style={"color": "black"}),
+                    dcc.Checklist(df["quarter"].unique().tolist(),
+                                  df["quarter"].unique().tolist(), 
+                                  style={"margin-bottom": "15px", "padding-left": 5},
+                                  id="quarter_checklist")
+                ])
+            ]),
 
               dbc.Row([
                     dbc.Col([
@@ -189,13 +200,7 @@ maindiv = html.Div(
                 "This is where summary statistics go"
             )
         ], style={"margin-bottom": "30px",
-                  "width":"auto"}),
-        html.H4("Credentials"),
-        html.Hr(),
-        html.Ul([
-            html.Li("This is where the credentials go"),
-            html.Li("Okay Sure")
-        ], id='credential-list')
+                  "width":"auto"})
 
     ]
 )
@@ -216,7 +221,8 @@ layout = html.Div(children=[
      Input("price_slider", "value"),
      Input("roomtype_dropdown", "value"),
      Input("num_beds_dropdown", "value"),
-     Input("num_bathrooms_dropdown", "value")
+     Input("num_bathrooms_dropdown", "value"),
+     Input("quarter_checklist", "value")
      ],
      prevent_intial_call=True)
 def get_location(neighbourhood_dropdown, 
@@ -224,12 +230,18 @@ def get_location(neighbourhood_dropdown,
                  price_slider, 
                  roomtype_dropdown, 
                  num_beds_dropdown, 
-                 num_bathrooms_dropdown):
+                 num_bathrooms_dropdown,
+                 quarter_checklist):
+    
+    if quarter_checklist != None:
+        df_filtered = df[df["quarter"].isin(quarter_checklist)]
+
+    if quarter_checklist == None:
+        df_filtered = df.copy()
+
     # Filter for neighbourhood
     if neighbourhood_dropdown != None:
-        df_filtered = df[df["neighbourhood_cleansed"] == neighbourhood_dropdown]
-    else:
-        df_filtered = df.copy()
+        df_filtered = df_filtered[df_filtered["neighbourhood_cleansed"] == neighbourhood_dropdown]
 
     # Filter for number of people
     if people_dropdown != None:
