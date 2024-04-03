@@ -8,6 +8,7 @@ import os
 dropdown_menu = dbc.Navbar(
     dbc.Container([dbc.Row([
                         dbc.Col([
+                            html.Img(src=dash.get_asset_url('house_icon.png'), height="35px"),
                             dbc.NavbarBrand("Vancouver AirBnB Listings", className="ms-2")
                         ],
                         width={"size":"auto"})
