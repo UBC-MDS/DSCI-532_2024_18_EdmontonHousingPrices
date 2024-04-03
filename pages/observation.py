@@ -42,7 +42,7 @@ ALLOWED_TYPES = (
 )
 
 sidebar = html.Div([
-        html.H3("Filter by:", style={"margin-left": "14px"}),
+        html.H4("Apply Filter", style={"margin-left": "14px"}),
         html.Hr(),
         dbc.Container([
 
@@ -118,25 +118,16 @@ sidebar = html.Div([
         ])
 ])
 
-
-maindiv = html.Div(
-    id="first-div",
-    children=[
-        html.Div([
-            html.H3("Navigate"),
-            html.Hr(),
-            html.P(
-                "View available listings:", style={"color": "#d85e30"}
-            ),
-
-            dbc.Row([
-
-                    dash_table.DataTable(
+tab1_content = dbc.Card(
+    dbc.CardBody(
+        dbc.Row([
+            dbc.Col([
+                dash_table.DataTable(
                         style_table={'overflowX': 'auto'},
                         id="filtered_df",
                         data=df.to_dict("records"),
                         columns=[{'id': c, 'name': c} for c in df.columns],
-                        page_size=5,
+                        page_size=10,
                         style_cell_conditional=[
                             {
                                 'if': {'column_id': c},
@@ -153,24 +144,53 @@ maindiv = html.Div(
                                     "font_size": "12px",
                                     "text_align": "left"},
                         style_data={'backgroundColor': 'transparent'},
-                        sort_mode="single")], style={"margin-top": "15px",
-                                                     "margin-right": "15px"
-                                                     }),
-            html.P(
-                "View in map:", style={"color": "#d85e30"}
-            ),
-            # Replace the line below with map
-            dcc.Graph(figure=fig)
+                        sort_mode="single")
+            ])
+        ])
+    )
+)
+
+tab2_content = dbc.Card(
+    dbc.CardBody(
+        dbc.Row([
+            dbc.Col([
+                dcc.Graph(figure=fig)
+            ])
+        ])
+    ), className="mt-3"
+)
+
+
+maindiv = html.Div(
+    id="first-div",
+    children=[
+        html.Div([
+            html.H4("Navigate"),
+        html.Hr(),
+        dbc.Card([
+        dbc.CardHeader(
+            dbc.Tabs([
+                dbc.Tab(tab1_content, label="View as List", tab_style={"marginLeft": "8px",
+                                                                       "marginBottom": "10px"}),
+                dbc.Tab(tab2_content, label="View in Map", tab_style={"marginRight": "20px"})
+                ])
+        ),
+        ], className="mt-3",
+        style={"margin-left": "20px",
+               "margin-right": "20px",
+               "margin-bottom": "30px",
+               "width":"auto"}),
         ]),
 
         html.Div([
-            html.H3("Summary Statistics"),
+            html.H4("Summary Statistics"),
             html.Hr(),
             html.P(
                 "This is where summary statistics go"
             )
-        ]),
-        html.H3("Credentials"),
+        ], style={"margin-bottom": "30px",
+                  "width":"auto"}),
+        html.H4("Credentials"),
         html.Hr(),
         html.Ul([
             html.Li("This is where the credentials go"),
@@ -233,3 +253,32 @@ def get_location(neighbourhood_dropdown,
     
     return df_filtered.to_dict("records")
     
+# @app.callback(Output('tabs_content', 'children'),
+#               Input('tabs_main', 'value'))
+# def get_tab_content(tab):
+#     if tab == "tab-1":
+#         return dash_table.DataTable(
+#                         style_table={'overflowX': 'auto'},
+#                         id="filtered_df",
+#                         data=df.to_dict("records"),
+#                         columns=[{'id': c, 'name': c} for c in df.columns],
+#                         page_size=5,
+#                         style_cell_conditional=[
+#                             {
+#                                 'if': {'column_id': c},
+#                                 'textAlign': 'left'
+#                             } for c in ['Date', 'Region']
+#                         ],
+#                         style_as_list_view=True,
+#                         editable=True,
+#                         sort_action="native",
+#                         style_header={"backgroundColor": "#d85e30",
+#                                       "fontweight": "bold", "color": "black",
+#                                       "font_size": "14px"},
+#                         style_cell={"font_family": "arial",
+#                                     "font_size": "12px",
+#                                     "text_align": "left"},
+#                         style_data={'backgroundColor': 'transparent'},
+#                         sort_mode="single")
+#     elif tab == "tab-2":
+#         return dcc.Graph(figure=fig)
