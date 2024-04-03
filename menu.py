@@ -11,7 +11,7 @@ dropdown_menu = dbc.Navbar(
                             html.Img(src=dash.get_asset_url('house_icon.png'), height="35px"),
                             dbc.NavbarBrand("Vancouver AirBnB Listings", className="ms-2")
                         ],
-                        width={"size":"auto"})
+                        width={"size":"auto"}, className="g-0"),
                     ],
                     align="center",
                     className="ml-0"),

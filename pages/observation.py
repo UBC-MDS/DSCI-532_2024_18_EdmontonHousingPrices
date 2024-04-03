@@ -42,8 +42,8 @@ ALLOWED_TYPES = (
 )
 
 sidebar = html.Div([
-        html.H3("Filter by:", style={"margin-left": "16px"}),
-        # html.Hr(),
+        html.H3("Filter by:", style={"margin-left": "14px"}),
+        html.Hr(),
         dbc.Container([
 
               dbc.Row([
@@ -128,6 +128,7 @@ maindiv = html.Div(
             html.P(
                 "View available listings:", style={"color": "#d85e30"}
             ),
+
             dbc.Row([
 
                     dash_table.DataTable(
@@ -166,15 +167,16 @@ maindiv = html.Div(
             html.H3("Summary Statistics"),
             html.Hr(),
             html.P(
-                "This is where summary statistics go", className="lead"
+                "This is where summary statistics go"
             )
         ]),
+        html.H3("Credentials"),
+        html.Hr(),
+        html.Ul([
+            html.Li("This is where the credentials go"),
+            html.Li("Okay Sure")
+        ], id='credential-list')
 
-        dcc.Tab(
-                label='Tab 1',
-                value='tab-1',
-                className='tab-style',
-                selected_className='selected-tab-style')
     ]
 )
 
