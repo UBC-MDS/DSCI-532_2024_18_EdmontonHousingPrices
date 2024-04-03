@@ -21,11 +21,12 @@ dropdown_menu = dbc.Navbar(
                 dbc.Nav([
                     dbc.NavItem(dbc.NavLink("Observation", href="/")),
                     dbc.NavItem(dbc.NavLink("Prediction", href="/prediction")),
+                    dbc.NavItem(dbc.NavLink("Credentials", href="/credentials")),
                     dbc.NavItem(dbc.NavLink(html.I(className="bi bi-github"),
                                             href="https://github.com/UBC-MDS/DSCI-532_2024_18_VancouverAirbnbPrices",
                                             external_link=True)),
                 ], navbar=True)
-            ], align="center", className="ml-auto"),
+            ], align="left", className="ml-auto", style={"margin-left":None}),
 
         ]),
     ]),
