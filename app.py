@@ -11,3 +11,5 @@ app = dash.Dash(__name__,
                 pages_folder="pages",
                 suppress_callback_exceptions=True,
                 prevent_initial_callbacks=True)
+
+server = app.server
