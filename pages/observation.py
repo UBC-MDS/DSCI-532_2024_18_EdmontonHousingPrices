@@ -5,8 +5,28 @@ from dash import html
 import dash_bootstrap_components as dbc
 import menu
 import dash
+from dash import dcc
+from dash.dependencies import Input, Output, State
+from app import app
+from dash import Dash, html, dcc, dash_table, ctx
+from dash import callback_context
+import numpy as np
+
+import plotly.graph_objects as go
+
+import pandas as pd
+
+fig = go.Figure()
 
 dash.register_page(__name__, path="/", title="Observation")
+
+df = pd.read_csv("data/raw/listings.csv")
+df = df[df["host_location"] == "Vancouver, Canada"]
+df.dropna(subset=['host_location', 'price', 'bathrooms_text'], inplace=True)
+df = df[["neighbourhood_cleansed", "accommodates", "price", "room_type", "beds", "bathrooms_text"]]
+
+df["price_adjusted"] = df["price"].str.extract(r'([0-9.]+)', expand = False).astype(float)
+df["bathroom_adjusted"] = df["bathrooms_text"].str.extract(r'([0-9.]+)', expand = False).astype(float)
 
 SIDEBAR_STYLE = {
     "top": 42,
@@ -16,41 +36,145 @@ SIDEBAR_STYLE = {
     "overflowY": "auto",
 }
 
-sidebar = html.Div(
-    [
-        html.H3("Filter by:"),
-        html.Hr(),
-        html.P(
-            "Dropdowns go here"
-        ),
-        # content
-    ],
-    style=SIDEBAR_STYLE,
+ALLOWED_TYPES = (
+    "text", "number", "password", "email", "search",
+    "tel", "url", "range", "hidden",
 )
+
+sidebar = html.Div([
+        html.H3("Filter by:", style={"margin-left": "16px"}),
+        # html.Hr(),
+        dbc.Container([
+
+              dbc.Row([
+                    dbc.Col([
+                          html.Label("Select Neighbourhood:", style={"color": "black"}),
+                          dcc.Dropdown(id="neighbourhood_dropdown",
+                                       options=[{"label": r, "value": r} for r in df["neighbourhood_cleansed"].unique().tolist()],
+                                       multi=False,
+                                       style={"margin-bottom": "20px"})
+                    ])
+              ]),
+
+              dbc.Row([
+                    dbc.Col([
+                          html.Label("Number of Guests:", style={"color": "black"}),
+                          dcc.Dropdown(id="people_dropdown",
+                                       options=np.arange(start=1, stop=10, step=1).tolist(),
+                                       multi=False,
+                                       style={"margin-bottom": "20px"})
+                    ])
+              ]),
+
+              dbc.Row([
+                    dbc.Col([
+                          html.Label("Room Type:", style={"color": "black"}),
+                          dcc.Dropdown(id="roomtype_dropdown",
+                                       options=[{"label": r, "value": r} for r in df["room_type"].unique().tolist()],
+                                       multi=False,
+                                       style={"margin-bottom": "20px"})
+                    ])
+              ]),
+
+              dbc.Row([
+                    dbc.Col([
+                          html.Label("Price Range:", style={"color": "black"}),
+                          dcc.RangeSlider(min(df["price_adjusted"]), 
+                                          max(df["price_adjusted"]), 
+                                          10, 
+                                          value=[0, df["price_adjusted"].mean()], 
+                                          id='price_slider',
+                                          marks={
+                                            100: {'label': "$100"},
+                                            300: {'label': '$300'},
+                                            500: {'label': '$500'},
+                                            700: {'label': '$700'},
+                                            900: {'label': '$900'}, 
+                                            
+                                        })
+                    ])
+              ], style={"margin-bottom": "20px"}),
+
+              dbc.Row([
+                    dbc.Col([
+                          html.Label("Number of Beds:", style={"color": "black"}),
+                          dcc.Dropdown(id="num_beds_dropdown",
+                                       options=np.arange(start=1, stop=10, step=1).tolist(),
+                                       multi=False,
+                                       style={"margin-bottom": "20px"})
+                    ])
+              ]),
+
+              dbc.Row([
+                    dbc.Col([
+                          html.Label("Number of Bathrooms:", style={"color": "black"}),
+                          dcc.Dropdown(id="num_bathrooms_dropdown",
+                                       options=np.arange(start=0.5, stop=6, step=0.5).tolist(),
+                                       multi=False,
+                                       style={"margin-bottom": "20px"})
+                    ])
+              ])
+
+        ])
+])
 
 
 maindiv = html.Div(
     id="first-div",
     children=[
-        html.H1("Observation", style={"color": "#89CFF0",
-                                "margin-bottom": "10px"}),
-        # first row
         html.Div([
-            html.H2("Map"),
+            html.H3("Navigate"),
             html.Hr(),
             html.P(
-                "This is where the map goes", className="lead"
-            )
+                "View available listings:", style={"color": "#d85e30"}
+            ),
+            dbc.Row([
+
+                    dash_table.DataTable(
+                        style_table={'overflowX': 'auto'},
+                        id="filtered_df",
+                        data=df.to_dict("records"),
+                        columns=[{'id': c, 'name': c} for c in df.columns],
+                        page_size=5,
+                        style_cell_conditional=[
+                            {
+                                'if': {'column_id': c},
+                                'textAlign': 'left'
+                            } for c in ['Date', 'Region']
+                        ],
+                        style_as_list_view=True,
+                        editable=True,
+                        sort_action="native",
+                        style_header={"backgroundColor": "#d85e30",
+                                      "fontweight": "bold", "color": "black",
+                                      "font_size": "14px"},
+                        style_cell={"font_family": "arial",
+                                    "font_size": "12px",
+                                    "text_align": "left"},
+                        style_data={'backgroundColor': 'transparent'},
+                        sort_mode="single")], style={"margin-top": "15px",
+                                                     "margin-right": "15px"
+                                                     }),
+            html.P(
+                "View in map:", style={"color": "#d85e30"}
+            ),
+            # Replace the line below with map
+            dcc.Graph(figure=fig)
         ]),
 
-        # second row
         html.Div([
-            html.H2("Summary Statistics"),
+            html.H3("Summary Statistics"),
             html.Hr(),
             html.P(
                 "This is where summary statistics go", className="lead"
             )
         ]),
+
+        dcc.Tab(
+                label='Tab 1',
+                value='tab-1',
+                className='tab-style',
+                selected_className='selected-tab-style')
     ]
 )
 
@@ -62,3 +186,48 @@ layout = html.Div(children=[
         dbc.Col(maindiv, width=9)  
     ])
 ])
+
+@app.callback(
+    Output("filtered_df", "data"),
+    [Input("neighbourhood_dropdown", "value"),
+     Input("people_dropdown", "value"),
+     Input("price_slider", "value"),
+     Input("roomtype_dropdown", "value"),
+     Input("num_beds_dropdown", "value"),
+     Input("num_bathrooms_dropdown", "value")
+     ],
+     prevent_intial_call=True)
+def get_location(neighbourhood_dropdown, 
+                 people_dropdown, 
+                 price_slider, 
+                 roomtype_dropdown, 
+                 num_beds_dropdown, 
+                 num_bathrooms_dropdown):
+    # Filter for neighbourhood
+    if neighbourhood_dropdown != None:
+        df_filtered = df[df["neighbourhood_cleansed"] == neighbourhood_dropdown]
+    else:
+        df_filtered = df.copy()
+
+    # Filter for number of people
+    if people_dropdown != None:
+        df_filtered = df_filtered[df_filtered["accommodates"] == int(people_dropdown)]
+
+    # Filter for price
+    if price_slider != None:
+        df_filtered = df_filtered[(df_filtered["price_adjusted"] >= int(price_slider[0])) & (df_filtered["price_adjusted"] <= int(price_slider[1]))]
+
+    # Filter for roomtype
+    if roomtype_dropdown != None:
+        df_filtered = df_filtered[df_filtered["room_type"] == roomtype_dropdown]
+
+    # Filter for number of rooms
+    if num_beds_dropdown != None:
+        df_filtered = df_filtered[df_filtered["beds"] == num_beds_dropdown]
+
+    # Filter for number of rooms
+    if num_bathrooms_dropdown != None:
+        df_filtered = df_filtered[df_filtered["bathroom_adjusted"] == num_bathrooms_dropdown]
+    
+    return df_filtered.to_dict("records")
+    
