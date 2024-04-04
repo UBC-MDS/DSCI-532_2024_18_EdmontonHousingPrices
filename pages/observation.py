@@ -197,7 +197,24 @@ maindiv = html.Div(
             html.H4("Summary Statistics"),
             html.Hr(),
             html.P(
-                "This is where summary statistics go"
+                dbc.Container(
+    [
+        dbc.Row(
+            [
+                dbc.Col(html.Div(dbc.Card(id='avg_accom'))),
+                dbc.Col(html.Div(dbc.Card(id='avg_accom'))),
+                dbc.Col(html.Div(dbc.Card(id='avg_accom'))),
+            ]
+        ),
+        dbc.Row(
+            [
+                dbc.Col(html.Div(dbc.Card(id='avg_accom'))),
+                dbc.Col(html.Div(dbc.Card(id='avg_accom'))),
+                dbc.Col(html.Div(dbc.Card(id='avg_accom'))),
+            ]
+        ),
+    ]
+)
             )
         ], style={"margin-bottom": "30px",
                   "width":"auto"})
@@ -215,7 +232,8 @@ layout = html.Div(children=[
 ])
 
 @app.callback(
-    Output("filtered_df", "data"),
+    [Output("filtered_df", "data"),
+    Output("avg_accom", "children")],
     [Input("neighbourhood_dropdown", "value"),
      Input("people_dropdown", "value"),
      Input("price_slider", "value"),
@@ -263,4 +281,9 @@ def get_location(neighbourhood_dropdown,
     if num_bathrooms_dropdown != None:
         df_filtered = df_filtered[df_filtered["bathroom_adjusted"] == num_bathrooms_dropdown]
     
-    return df_filtered.to_dict("records")
+    avg_accom = [
+        dbc.CardHeader('Average number of people'),
+        dbc.CardBody(f'{df_filtered["accommodates"].mean() :.1f}')
+    ]
+
+    return df_filtered.to_dict("records"), avg_accom
