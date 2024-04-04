@@ -202,15 +202,13 @@ maindiv = html.Div(
         dbc.Row(
             [
                 dbc.Col(html.Div(dbc.Card(id='avg_accom'))),
-                dbc.Col(html.Div(dbc.Card(id='avg_accom'))),
-                dbc.Col(html.Div(dbc.Card(id='avg_accom'))),
+                dbc.Col(html.Div(dbc.Card(id='avg_price'))),
             ]
         ),
         dbc.Row(
             [
-                dbc.Col(html.Div(dbc.Card(id='avg_accom'))),
-                dbc.Col(html.Div(dbc.Card(id='avg_accom'))),
-                dbc.Col(html.Div(dbc.Card(id='avg_accom'))),
+                dbc.Col(html.Div(dbc.Card(id='avg_beds'))),
+                dbc.Col(html.Div(dbc.Card(id='avg_bath'))),
             ]
         ),
     ]
@@ -233,7 +231,10 @@ layout = html.Div(children=[
 
 @app.callback(
     [Output("filtered_df", "data"),
-    Output("avg_accom", "children")],
+    Output("avg_accom", "children"),
+    Output("avg_price", "children"),
+    Output("avg_beds", "children"),
+    Output("avg_bath", "children")],
     [Input("neighbourhood_dropdown", "value"),
      Input("people_dropdown", "value"),
      Input("price_slider", "value"),
@@ -286,4 +287,20 @@ def get_location(neighbourhood_dropdown,
         dbc.CardBody(f'{df_filtered["accommodates"].mean() :.1f}')
     ]
 
-    return df_filtered.to_dict("records"), avg_accom
+    avg_price = [
+        dbc.CardHeader('Average price'),
+        dbc.CardBody(f'{df_filtered["price_adjusted"].mean() :.1f}')
+    ]
+
+    avg_beds = [
+        dbc.CardHeader('Average number of beds'),
+        dbc.CardBody(f'{df_filtered["beds"].mean() :.1f}')
+    ]
+
+    avg_bath = [
+        dbc.CardHeader('Average number of bathrooms'),
+        dbc.CardBody(f'{df_filtered["bathroom_adjusted"].mean() :.1f}')
+    ]
+
+
+    return df_filtered.to_dict("records"), avg_accom, avg_price, avg_beds, avg_bath
