@@ -3,7 +3,7 @@ from dash import dcc
 from dash.dependencies import Input, Output
 
 from app import app
-from pages import observation, prediction
+from pages import observation, prediction, credentials
 
 url_content_layout = html.Div(children=[
     dcc.Location(id="url",refresh=False),
@@ -27,6 +27,8 @@ def update_output_div(pathname):
         return observation.layout
     elif pathname == "/prediction":
         return prediction.layout
+    elif pathname == "/credentials":
+        return credentials.layout
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run(debug=True)

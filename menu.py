@@ -8,9 +8,10 @@ import os
 dropdown_menu = dbc.Navbar(
     dbc.Container([dbc.Row([
                         dbc.Col([
+                            html.Img(src=dash.get_asset_url('house_icon.png'), height="35px"),
                             dbc.NavbarBrand("Vancouver AirBnB Listings", className="ms-2")
                         ],
-                        width={"size":"auto"})
+                        width={"size":"auto"}, className="g-0"),
                     ],
                     align="center",
                     className="ml-0"),
@@ -20,11 +21,12 @@ dropdown_menu = dbc.Navbar(
                 dbc.Nav([
                     dbc.NavItem(dbc.NavLink("Observation", href="/")),
                     dbc.NavItem(dbc.NavLink("Prediction", href="/prediction")),
+                    dbc.NavItem(dbc.NavLink("Credentials", href="/credentials")),
                     dbc.NavItem(dbc.NavLink(html.I(className="bi bi-github"),
                                             href="https://github.com/UBC-MDS/DSCI-532_2024_18_VancouverAirbnbPrices",
                                             external_link=True)),
                 ], navbar=True)
-            ], align="center", className="ml-auto"),
+            ], align="left", className="ml-auto", style={"margin-left":None}),
 
         ]),
     ]),
