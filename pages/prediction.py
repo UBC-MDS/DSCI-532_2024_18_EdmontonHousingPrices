@@ -15,6 +15,7 @@ import numpy as np
 # from functions.visualization import map_fig
 
 import plotly.graph_objects as go
+import plotly.express as px
 
 import pandas as pd
 dash.register_page(__name__, path="/", title="Prediction")
@@ -95,76 +96,14 @@ sidebar = html.Div([
         ])
 ])
 
-tab1_content = dbc.Card(
-    dbc.CardBody(
-        dbc.Row([
-            dbc.Col([
-                dash_table.DataTable(
-                        style_table={'overflowX': 'auto'},
-                        id="filtered_df",
-                        data=df.to_dict("records"),
-                        columns=[{'id': c, 'name': c} for c in df.columns],
-                        page_size=10,
-                        style_cell_conditional=[
-                            {
-                                'if': {'column_id': c},
-                                'textAlign': 'left'
-                            } for c in ['Date', 'Region']
-                        ],
-                        style_as_list_view=True,
-                        editable=True,
-                        sort_action="native",
-                        style_header={"backgroundColor": "#d85e30",
-                                      "fontweight": "bold", "color": "black",
-                                      "font_size": "14px"},
-                        style_cell={"font_family": "arial",
-                                    "font_size": "12px",
-                                    "text_align": "left"},
-                        style_data={'backgroundColor': 'transparent'},
-                        sort_mode="single")
-            ])
-        ])
-    ), style={"margin-top":"10px"}
-)
-
-tab2_content = dbc.Card(
-    dbc.CardBody(
-        dbc.Row([
-            dbc.Col([
-                # dcc.Graph(figure=fig)
-            ])
-        ])
-    ), className="mt-3"
-)
-
-
 maindiv = html.Div(
     id="first-div",
     children=[
         html.Div([
-            html.H4("Predicted Price per Night (CAD)"),
+        html.H4("Predicted Price per Night (CAD)"),
         html.Hr(),
-        dbc.Card([
-        dbc.CardHeader(
-            dbc.Tabs([
-                html.P(id="eval_paragraph")
-                ])
-        ),
-        ], className="mt-3",
-        style={"margin-left": "20px",
-               "margin-right": "20px",
-               "margin-bottom": "30px",
-               "width":"auto"}),
+        html.Div(id="display_pred", style={"margin-right":"20px"})
         ]),
-
-        html.Div([
-            html.H4("Summary Statistics"),
-            html.Hr(),
-            html.P(
-                "This is where summary statistics go"
-            )
-        ], style={"margin-bottom": "30px",
-                  "width":"auto"})
 
     ]
 )
@@ -179,7 +118,7 @@ layout = html.Div(children=[
 ])
 
 @app.callback(
-    Output('eval_paragraph', 'children'),
+    [Output("display_pred", "children")],
     [Input('eval_button', 'n_clicks'),
      State("people_dropdown_eval", "value"),
      State("roomtype_dropdown_eval", "value"),
@@ -188,11 +127,37 @@ layout = html.Div(children=[
      State("longitude_input", "value"),
      State("latitude_input", "value")]
 )
-def getOptionValues(eval_button, people_ddropdown_eval, 
+def getOptionValues(eval_button, people_dropdown_eval, 
                     roomtype_dropdown_eval, 
                     num_beds_dropdown_eval, 
                     num_bathrooms_dropdown_eval,
                     latitude_input, longitude_input):
+    statement = "Hi"
+    new_df = pd.DataFrame(
+        {"latitude": float(latitude_input),
+         "longitude": float(longitude_input),
+         "room_type": roomtype_dropdown_eval,
+         "num_guests": people_dropdown_eval,
+         "num_beds": num_beds_dropdown_eval,
+         "num_baths": num_bathrooms_dropdown_eval},
+         index=[0]
+    )
     if "eval_button" == ctx.triggered_id:
-        print(type(latitude_input))
-        print(latitude_input, longitude_input, roomtype_dropdown_eval, num_beds_dropdown_eval, people_ddropdown_eval, num_bathrooms_dropdown_eval)
+        print(latitude_input, longitude_input, roomtype_dropdown_eval, num_beds_dropdown_eval, people_dropdown_eval, num_bathrooms_dropdown_eval)
+
+        pred_alert = [
+        dbc.Card(
+                dbc.CardBody([f"Your Input: ",
+                              html.Hr(),
+                              f"{longitude_input}"], 
+                             style={"text-align":"center"}),
+                className="mb-4", color="light"
+            )
+        ]
+
+        # fig = px.scatter_mapbox(
+        #     new_df, lat = new_df.latitude, lon = new_df.longitude,
+        #     hover_name="num_guests", zoom=5
+        # )
+        pred = f"{longitude_input, longitude_input}"
+        return pred_alert
