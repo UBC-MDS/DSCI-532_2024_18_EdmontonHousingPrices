@@ -1,6 +1,3 @@
-import sys
-sys.path.append('../')
-
 from dash import html
 import dash_bootstrap_components as dbc
 import menu
@@ -11,6 +8,7 @@ from app import app
 from dash import Dash, html, dcc, dash_table, ctx
 from dash import callback_context
 import numpy as np
+import plotly.graph_objects as go
 
 # from functions.visualization import map_fig
 
@@ -19,14 +17,13 @@ import plotly.express as px
 
 import pandas as pd
 
-fig = go.Figure()
-
+#fig = go.Figure()
 dash.register_page(__name__, path="/", title="Observation")
 
 df = pd.read_csv("data/raw/listings.csv")
 df = df[df["host_location"] == "Vancouver, Canada"]
 df.dropna(subset=['host_location', 'price', 'bathrooms_text'], inplace=True)
-df = df[["neighbourhood_cleansed", "accommodates", "price", "room_type", "beds", "bathrooms_text", "quarter"]]
+df = df[["neighbourhood_cleansed", "accommodates", "price", "room_type", "beds", "bathrooms_text", "quarter", "latitude", "longitude"]]
 
 df["price_adjusted"] = df["price"].str.extract(r'([0-9.]+)', expand = False).astype(float)
 df["bathroom_adjusted"] = df["bathrooms_text"].str.extract(r'([0-9.]+)', expand = False).astype(float)
@@ -189,7 +186,7 @@ tab2_content = dbc.Card(
     dbc.CardBody(
         dbc.Row([
             dbc.Col([
-                dcc.Graph(figure=fig)
+                dcc.Graph(id = "map")
             ])
         ])
     ), className="mt-3"
@@ -289,6 +286,7 @@ layout = html.Div(children=[
 
 @app.callback(
     [Output("filtered_df", "data"),
+     Output("map", "figure"),
     Output("avg_accom", "children"),
     Output("avg_price", "children"),
     Output("avg_beds", "children"),
@@ -302,6 +300,7 @@ layout = html.Div(children=[
      Input("quarter_checklist", "value")
      ],
      prevent_intial_call=True)
+
 def get_location(neighbourhood_dropdown, 
                  people_dropdown, 
                  price_slider, 
@@ -340,6 +339,21 @@ def get_location(neighbourhood_dropdown,
     if num_bathrooms_dropdown != None:
         df_filtered = df_filtered[df_filtered["bathroom_adjusted"] == num_bathrooms_dropdown]
     
+    fig = go.Figure(go.Scattermapbox(
+        lat=df_filtered["latitude"],
+        lon=df_filtered["longitude"],
+        mode='markers',
+        marker=go.scattermapbox.Marker(
+            size=9
+        ),
+        text=df_filtered["neighbourhood_cleansed"]
+    ))
+
+    fig.update_layout(
+        mapbox_style="carto-positron",
+        mapbox_zoom=10,
+        mapbox_center={"lat": df_filtered["latitude"].mean(), "lon": df_filtered["longitude"].mean()}
+    )
     avg_accom = [
         dbc.CardHeader('Average Number of Accomodates (Guests)', style={"text-align": "center"}),
         dbc.CardBody(f'{df_filtered["accommodates"].mean() :.1f}', style={"text-align": "center"})
@@ -360,9 +374,7 @@ def get_location(neighbourhood_dropdown,
         dbc.CardBody(f'{df_filtered["bathroom_adjusted"].mean() :.1f}', style={"text-align": "center"})
     ]
 
-    return df_filtered.to_dict("records"), avg_accom, avg_price, avg_beds, avg_bath
-
-
+    return df_filtered.to_dict("records"), fig,  avg_accom, avg_price, avg_beds, avg_bath
 
 
 @app.callback(
