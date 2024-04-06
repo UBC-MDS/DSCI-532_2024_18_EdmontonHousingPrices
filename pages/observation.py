@@ -8,6 +8,7 @@ from app import app
 from dash import Dash, html, dcc, dash_table, ctx
 from dash import callback_context
 import numpy as np
+from data.real_life_meaning_mapping import real_life_meaning_mapping
 import plotly.graph_objects as go
 
 # from functions.visualization import map_fig
@@ -29,11 +30,13 @@ df["price_adjusted"] = df["price"].str.extract(r'([0-9.]+)', expand = False).ast
 df["bathroom_adjusted"] = df["bathrooms_text"].str.extract(r'([0-9.]+)', expand = False).astype(float)
 
 simulated = pd.read_csv('data/raw/simulated.csv')
-exclusion_list = ['quarter','id','first_review','last_review','neighbourhood','room_type','number_of_guests','number_of_beds','number_of_bathrooms']
-metrics = [var for var in simulated.columns.tolist() if var not in exclusion_list]
 
 # Function to create a time-series plot
-def create_aggregated_time_series_plot(df, y_variable):
+def create_aggregated_time_series_plot(df, y_variable=None):
+    if y_variable is None:
+        y_variable = 'Daily Price'
+    y_name = y_variable
+    y_variable = real_life_meaning_mapping[y_name]['column_name']
     df = df.copy()
     year_quarter = df['quarter'].str.split('-', expand=True)
     
@@ -44,11 +47,30 @@ def create_aggregated_time_series_plot(df, y_variable):
     df['quarter'] = df['quarter'].dt.strftime('%Y-Q%q')
     # Aggregating the data
     aggregated_df = df.groupby('quarter')[y_variable].mean().reset_index()
+    median_aggregated_df = df.groupby('quarter')[y_variable].median().reset_index()
 
-    # Creating the plot
-    fig = px.line(aggregated_df, x='quarter', y=y_variable, title=f'Average Trend of the Metric {y_variable}')
-    fig.update_xaxes(title_text='Quarter')
-    fig.update_yaxes(title_text=f'Average Metric Value')
+    # Creating an empty figure and adding both mean and median as separate traces
+    fig = go.Figure()
+
+    # Add Mean trace
+    fig.add_trace(go.Scatter(x=aggregated_df['quarter'], y=aggregated_df[y_variable],
+                             mode='lines', name='Mean'))
+
+    # Adding median trend line
+    fig.add_trace(go.Scatter(x=median_aggregated_df['quarter'], y=median_aggregated_df[y_variable],
+                             mode='lines', name='Median', line=dict(dash='dash')))
+    # Center the title
+    fig.update_layout(
+        title={
+            'text': f'Trend of the Metric {y_name}',
+            'y':0.9,
+            'x':0.5,
+            'xanchor': 'center',
+            'yanchor': 'top'
+        }
+    )
+    fig.update_xaxes(title_text='Quarter', tickangle=-45)
+    fig.update_yaxes(title_text=f'Average {y_name}')
     return fig
 
 SIDEBAR_STYLE = {
@@ -255,20 +277,23 @@ maindiv = html.Div(
                   "width":"auto"}),
 
         html.Div([
-            html.H4("Trends of Key Metrics over time"),
+            html.H4("Trends of Key Metrics Over Time"),
             html.Hr(),
-            html.P(
-                "Please note that this part is based on simulated data, as the complete dataset is still being requested.",
-                style={'fontSize': '12px'}  # Adjust the font size as needed
-            ),
-            html.Label("Please Select One Metric for Plotting the Trend:", style={"color": "black"}),
+            html.P([
+                "Please note that this part is based on simulated data extending to the previous quarters, as the complete dataset is still being requested. ",
+                html.Br(),
+                "To understand the logic of the simulation, please see notebooks/data_exploration_time_series.ipynb."],
+                style={'fontSize': '12px'}),  # Adjust the font size as needed,
+            html.Label("Select one metric for Plotting the Trend:", style={"color": "black"}),
             dcc.Dropdown(id="metrics_dropdown",
-                        options=[{"label": r, "value": r} for r in metrics],
+                        options=[{'label': key, 'value': key} for key in real_life_meaning_mapping.keys()],
                         multi=False,
                         style={"margin-bottom": "20px"}),
+            # Add a Div to display the description of the selected metric
+            html.Div(id='metric-description', children='Description of the metric will be shown after selection!',style={"color": "black", "margin-bottom": "20px"}),
             dcc.Graph(
                 id='metric-time-series',
-                figure=create_aggregated_time_series_plot(simulated, 'price'))
+                figure=create_aggregated_time_series_plot(simulated))
         ], style={"margin-bottom": "30px",
                   "width":"auto"})
 
@@ -422,7 +447,16 @@ def create_plot(neighbourhood_dropdown,
 
     # Select metric
     if metrics_dropdown != None:
-
         metric_string = metrics_dropdown
+    else:
+        metric_string = None
 
     return create_aggregated_time_series_plot(filtered_simulated, metric_string)
+
+@app.callback(
+    Output('metric-description', 'children'),
+    [Input('metrics_dropdown', 'value')]
+)
+def update_description(selected_metric):
+    description = real_life_meaning_mapping[selected_metric]['description']
+    return description
