@@ -11,6 +11,7 @@ from app import app
 from dash import Dash, html, dcc, dash_table, ctx, callback
 from dash import callback_context
 import numpy as np
+from src.predict import predict_price  ### This is the function for using model to predict
 
 # from functions.visualization import map_fig
 
