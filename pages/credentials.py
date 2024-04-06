@@ -91,17 +91,35 @@ maindiv = html.Div([
                                                  align="top", width=3
             ),
             dbc.Col([
-                  html.P(
-                        "We are group of data science students enrolled in Master of Data Science program."
-                  ),
-                  html.P(
-                        "Latest Upate: --/--/--", style={'display': 'inline-block',
-                                                         "text-align": "left",
-                                                         "color": "#000000",
-                                                #  "font-family": "Arial, sans-serif",
-                                                "font-weight": "bold"}
-                  )
-        ])
+                        html.P(
+                            "This dashboard, created by a team of Master of Data Science students, offers a comprehensive and interactive platform designed to assist Airbnb hosts in Vancouver with pricing their listings. Drawing from a rich dataset of eight years of Airbnb listings in the city, our app provides a deep dive into various aspects of the rental market, from geographical trends to detailed property features."
+                        ),
+                        html.P(
+                            "Key features of the dashboard include: An interactive map highlighting the price range in different Vancouver neighborhoods, detailed filters allowing users to customize their search based on property type, number of bedrooms, and more, visualization of historical data on rental prices, offering insights into market trends, and a predictive model to help hosts estimate appropriate pricing for their listings."
+                        ),
+                        html.P(
+                            "Whether you are an existing Airbnb host or planning to list your property, our dashboard is tailored to provide valuable insights and predictions to help you navigate the dynamic rental landscape in Vancouver."
+                        ),
+                        html.P(
+                            "For more details, access",
+                            style={'display': 'inline-block',
+                                "text-align": "left",
+                                "color": "#000000",
+                                "font-weight": "bold"}
+                        ),
+                        html.A(
+                            " our repository",
+                            href="https://github.com/UBC-MDS/DSCI-532_2024_18_VancouverAirbnbPrices"
+                        ),
+                        html.Br(),
+                        html.P(
+                            "Latest Update: 2024-04-05", 
+                            style={'display': 'inline-block',
+                                "text-align": "left",
+                                "color": "#000000",
+                                "font-weight": "bold"}
+                        )
+                    ])
         ]),
         html.Hr(),
         dbc.Row([
