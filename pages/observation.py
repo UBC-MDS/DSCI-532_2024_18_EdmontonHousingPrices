@@ -73,7 +73,7 @@ def create_aggregated_time_series_plot(df, y_variable=None):
         }
     )
     fig.update_xaxes(title_text='Quarter', tickangle=-45)
-    fig.update_yaxes(title_text=f'Average Metric Value')
+    fig.update_yaxes(title_text=f'Average {y_name}')
     return fig
 
 SIDEBAR_STYLE = {
