@@ -208,7 +208,7 @@ maindiv = html.Div(
                 dbc.Tab(tab1_content, label="View as List", tab_style={"marginLeft": "8px",
                                                                        "marginBottom": "10px"}),
                 dbc.Tab(tab2_content, label="View in Map", tab_style={"marginRight": "20px"})
-                ])
+                ], active_tab="tab-0")
         ),
         ], className="mt-3",
         style={"margin-left": "20px",
@@ -221,7 +221,38 @@ maindiv = html.Div(
             html.H4("Summary Statistics"),
             html.Hr(),
             html.P(
-                "This is where summary statistics go"
+                dbc.Container([
+                    
+        dbc.Row([
+            dbc.Col([
+                dbc.Alert(
+                    ["Summary statistics are calculated based on the filters that are applied."],
+                    id="alert-fade",
+                    dismissable=True,
+                    is_open=True,
+                    fade=True,
+                    color="secondary",
+                    style={'font_size': '12px'}
+                ),
+                html.P("In the selected area, the averages are:")
+            ])
+        ]),
+
+
+        dbc.Row(
+            [
+                dbc.Col(html.Div(dbc.Card(id='avg_accom'))),
+                dbc.Col(html.Div(dbc.Card(id='avg_price'))),
+            ], style={"margin-bottom": "20px"}
+        ),
+        dbc.Row(
+            [
+                dbc.Col(html.Div(dbc.Card(id='avg_beds'))),
+                dbc.Col(html.Div(dbc.Card(id='avg_bath'))),
+            ], style={"margin-bottom": "20px"}
+        ),
+    ]
+)
             )
         ], style={"margin-bottom": "30px",
                   "width":"auto"}),
@@ -257,7 +288,11 @@ layout = html.Div(children=[
 ])
 
 @app.callback(
-    Output("filtered_df", "data"),
+    [Output("filtered_df", "data"),
+    Output("avg_accom", "children"),
+    Output("avg_price", "children"),
+    Output("avg_beds", "children"),
+    Output("avg_bath", "children")],
     [Input("neighbourhood_dropdown", "value"),
      Input("people_dropdown", "value"),
      Input("price_slider", "value"),
@@ -305,7 +340,28 @@ def get_location(neighbourhood_dropdown,
     if num_bathrooms_dropdown != None:
         df_filtered = df_filtered[df_filtered["bathroom_adjusted"] == num_bathrooms_dropdown]
     
-    return df_filtered.to_dict("records")
+    avg_accom = [
+        dbc.CardHeader('Average Number of Accomodates (Guests)', style={"text-align": "center"}),
+        dbc.CardBody(f'{df_filtered["accommodates"].mean() :.1f}', style={"text-align": "center"})
+    ]
+
+    avg_price = [
+        dbc.CardHeader('Average Price per Night (CAD)', style={"text-align": "center"}),
+        dbc.CardBody(f'${df_filtered["price_adjusted"].mean() :.1f}', style={"text-align": "center"})
+    ]
+
+    avg_beds = [
+        dbc.CardHeader('Average Number of Available Beds', style={"text-align": "center"}),
+        dbc.CardBody(f'{df_filtered["beds"].mean() :.1f}', style={"text-align": "center"})
+    ]
+
+    avg_bath = [
+        dbc.CardHeader('Average Number of Private and Public Washrooms', style={"text-align": "center"}),
+        dbc.CardBody(f'{df_filtered["bathroom_adjusted"].mean() :.1f}', style={"text-align": "center"})
+    ]
+
+    return df_filtered.to_dict("records"), avg_accom, avg_price, avg_beds, avg_bath
+
 
 
 
