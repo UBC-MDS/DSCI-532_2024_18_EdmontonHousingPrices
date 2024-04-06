@@ -1,8 +1,11 @@
+import sys
+sys.path.append('../')
+
 import pandas as pd
 import joblib
 
 # Load the saved model
-model = joblib.load('../models/price_model.pkl')  # see the notebook notebooks/data_model.ipynb for model training details
+model = joblib.load('models/price_model.pkl')  # see the notebook notebooks/data_model.ipynb for model training details
 
 
 def preprocess_data(data): # assumes the incoming data to be the same with the transformed data in observation.py
@@ -25,7 +28,7 @@ if __name__ == "__main__":
         'latitude': [49.247730],
         'accommodates': [4],
         'room_type': ['Entire home/apt'],
-        'beds': [2.0],
+        'beds': [3.0],
         'bathroom_adjusted': [2.0]
     })
 
