@@ -12,7 +12,7 @@ from dash import Dash, html, dcc, dash_table, ctx
 from dash import callback_context
 import numpy as np
 
-from assets.texts import jenny
+from assets.texts import jenny, wenyu
 
 import plotly.graph_objects as go
 
@@ -75,7 +75,7 @@ maindiv = html.Div([
                         "We are group of data science students enrolled in Master of Data Science program."
                   ),
                   make_card(jenny[1], jenny[0], jenny[2]),
-                  make_card(jenny[1], jenny[0], jenny[2]),
+                  make_card(wenyu[1], wenyu[0], wenyu[2]),
                   make_card(jenny[1], jenny[0], jenny[2]),
                   make_card(jenny[1], jenny[0], jenny[2])
         ])

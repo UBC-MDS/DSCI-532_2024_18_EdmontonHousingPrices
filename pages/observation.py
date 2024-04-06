@@ -15,6 +15,7 @@ import numpy as np
 # from functions.visualization import map_fig
 
 import plotly.graph_objects as go
+import plotly.express as px
 
 import pandas as pd
 
@@ -29,6 +30,29 @@ df = df[["neighbourhood_cleansed", "accommodates", "price", "room_type", "beds",
 
 df["price_adjusted"] = df["price"].str.extract(r'([0-9.]+)', expand = False).astype(float)
 df["bathroom_adjusted"] = df["bathrooms_text"].str.extract(r'([0-9.]+)', expand = False).astype(float)
+
+simulated = pd.read_csv('data/raw/simulated.csv')
+exclusion_list = ['quarter','id','first_review','last_review','neighbourhood','room_type','number_of_guests','number_of_beds','number_of_bathrooms']
+metrics = [var for var in simulated.columns.tolist() if var not in exclusion_list]
+
+# Function to create a time-series plot
+def create_aggregated_time_series_plot(df, y_variable):
+    df = df.copy()
+    year_quarter = df['quarter'].str.split('-', expand=True)
+    
+    # Convert year and quarter into a Period object
+    df['quarter'] = pd.PeriodIndex(year=year_quarter[0].astype(int), 
+                                   quarter=year_quarter[1].astype(int), 
+                                   freq='Q')
+    df['quarter'] = df['quarter'].dt.strftime('%Y-Q%q')
+    # Aggregating the data
+    aggregated_df = df.groupby('quarter')[y_variable].mean().reset_index()
+
+    # Creating the plot
+    fig = px.line(aggregated_df, x='quarter', y=y_variable, title=f'Average Trend of the Metric {y_variable}')
+    fig.update_xaxes(title_text='Quarter')
+    fig.update_yaxes(title_text=f'Average Metric Value')
+    return fig
 
 SIDEBAR_STYLE = {
     "top": 42,
@@ -231,6 +255,24 @@ maindiv = html.Div(
 )
             )
         ], style={"margin-bottom": "30px",
+                  "width":"auto"}),
+
+        html.Div([
+            html.H4("Trends of Key Metrics over time"),
+            html.Hr(),
+            html.P(
+                "Please note that this part is based on simulated data, as the complete dataset is still being requested.",
+                style={'fontSize': '12px'}  # Adjust the font size as needed
+            ),
+            html.Label("Please Select One Metric for Plotting the Trend:", style={"color": "black"}),
+            dcc.Dropdown(id="metrics_dropdown",
+                        options=[{"label": r, "value": r} for r in metrics],
+                        multi=False,
+                        style={"margin-bottom": "20px"}),
+            dcc.Graph(
+                id='metric-time-series',
+                figure=create_aggregated_time_series_plot(simulated, 'price'))
+        ], style={"margin-bottom": "30px",
                   "width":"auto"})
 
     ]
@@ -319,3 +361,56 @@ def get_location(neighbourhood_dropdown,
     ]
 
     return df_filtered.to_dict("records"), avg_accom, avg_price, avg_beds, avg_bath
+
+
+
+
+@app.callback(
+    Output('metric-time-series', 'figure'),
+    [Input("neighbourhood_dropdown", "value"),
+     Input("people_dropdown", "value"),
+     Input("price_slider", "value"),
+     Input("roomtype_dropdown", "value"),
+     Input("num_beds_dropdown", "value"),
+     Input("num_bathrooms_dropdown", "value"),
+     Input("metrics_dropdown", "value")
+     ],
+     prevent_intial_call=True)
+def create_plot(neighbourhood_dropdown, 
+                 people_dropdown, 
+                 price_slider, 
+                 roomtype_dropdown, 
+                 num_beds_dropdown, 
+                 num_bathrooms_dropdown,
+                 metrics_dropdown):
+    
+
+    filtered_simulated = simulated.copy() 
+    # Filter for neighbourhood
+    if neighbourhood_dropdown != None:
+        filtered_simulated = filtered_simulated[filtered_simulated["neighbourhood"] == neighbourhood_dropdown]
+
+    # Filter for number of people
+    if people_dropdown != None:
+        filtered_simulated = filtered_simulated[filtered_simulated["number_of_guests"] == int(people_dropdown)]
+    # Filter for price
+    if price_slider != None:
+        filtered_simulated = filtered_simulated[(filtered_simulated["price"] >= int(price_slider[0])) & (filtered_simulated["price"] <= int(price_slider[1]))]
+    # Filter for roomtype
+    if roomtype_dropdown != None:
+        filtered_simulated = filtered_simulated[filtered_simulated["room_type"] == roomtype_dropdown]
+    # Filter for number of rooms
+    if num_beds_dropdown != None:
+        filtered_simulated = filtered_simulated[filtered_simulated["number_of_beds"] == num_beds_dropdown]
+
+    # Filter for number of rooms
+    if num_bathrooms_dropdown != None:
+
+        filtered_simulated = filtered_simulated[filtered_simulated["number_of_bathrooms"] == num_bathrooms_dropdown]
+
+    # Select metric
+    if metrics_dropdown != None:
+
+        metric_string = metrics_dropdown
+
+    return create_aggregated_time_series_plot(filtered_simulated, metric_string)
