@@ -103,8 +103,22 @@ maindiv = html.Div(
         html.Div([
         html.H4("Predicted Price per Night (CAD)"),
         html.Hr(),
-        html.Div(id="display_pred", style={"margin-right":"20px"})
-        ]),
+        dbc.Alert(["Please make sure to include Longitude and Latitude as a numeric data type."],
+                  id="alert-fade",
+                    dismissable=True,
+                    is_open=True,
+                    fade=True,
+                    color="warning"),
+        dbc.Card(
+                dbc.CardBody([
+                    html.P("Your Input is: "),
+                    html.Div(id="user_inputs"),
+                    html.Hr(),
+                    html.Div(id="prediction_card")], 
+                    style={"text-align":"center", "margin-right": "20px"}),
+                className="mb-4", color="light"
+            )
+        ], style={"margin-right": "20px"})
 
     ]
 )
@@ -119,7 +133,8 @@ layout = html.Div(children=[
 ])
 
 @app.callback(
-    [Output("display_pred", "children")],
+    [Output("prediction_card", "children"),
+     Output("user_inputs", "children")],
     [Input('eval_button', 'n_clicks'),
      State("people_dropdown_eval", "value"),
      State("roomtype_dropdown_eval", "value"),
@@ -135,30 +150,22 @@ def getOptionValues(eval_button, people_dropdown_eval,
                     latitude_input, longitude_input):
     statement = "Hi"
     new_df = pd.DataFrame(
-        {"latitude": float(latitude_input),
-         "longitude": float(longitude_input),
+        {"longitude": float(longitude_input),
+         "latitude": float(latitude_input),
+         "accommodates": people_dropdown_eval,
          "room_type": roomtype_dropdown_eval,
-         "num_guests": people_dropdown_eval,
-         "num_beds": num_beds_dropdown_eval,
-         "num_baths": num_bathrooms_dropdown_eval},
+         "beds": float(num_beds_dropdown_eval),
+         "bathroom_adjusted": float(num_bathrooms_dropdown_eval)},
          index=[0]
     )
     if "eval_button" == ctx.triggered_id:
-        print(latitude_input, longitude_input, roomtype_dropdown_eval, num_beds_dropdown_eval, people_dropdown_eval, num_bathrooms_dropdown_eval)
+
+        inputs = f"Longitude: {longitude_input}, \
+            \n Latitude: {latitude_input}, \n Number of Guests: {people_dropdown_eval}, \n Room Type: {roomtype_dropdown_eval}, \n Number of Beds: {num_beds_dropdown_eval}, \n Number of Bathrooms: {num_bathrooms_dropdown_eval}"
+
+        pred_val = predict_price(new_df)
 
         pred_alert = [
-        dbc.Card(
-                dbc.CardBody([f"Your Input: ",
-                              html.Hr(),
-                              f"{longitude_input}"], 
-                             style={"text-align":"center"}),
-                className="mb-4", color="light"
-            )
+        html.P(f"Your Predicted Value per Night is: ${pred_val[0]:.3f} CAD.", style={'fontSize': '13px'})
         ]
-
-        # fig = px.scatter_mapbox(
-        #     new_df, lat = new_df.latitude, lon = new_df.longitude,
-        #     hover_name="num_guests", zoom=5
-        # )
-        pred = f"{longitude_input, longitude_input}"
-        return pred_alert
+        return pred_alert, inputs

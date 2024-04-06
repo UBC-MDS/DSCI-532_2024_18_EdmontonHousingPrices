@@ -245,15 +245,17 @@ maindiv = html.Div(
         dbc.Row([
             dbc.Col([
                 dbc.Alert(
-                    ["Summary statistics are calculated based on the filters that are applied."],
+                    ["Summary statistics are calculated based on the filters that are applied.",
+                     html.Br(),
+                     "If no filter is applied, summary statistics are not shown."],
                     id="alert-fade",
                     dismissable=True,
                     is_open=True,
                     fade=True,
-                    color="secondary",
-                    style={'font_size': '12px'}
+                    color="warning",
+                    style={'fontSize': '13px'}
                 ),
-                html.P("In the selected area, the averages are:")
+                # html.P("In the selected area, the averages are:")
             ])
         ]),
 
@@ -279,23 +281,34 @@ maindiv = html.Div(
         html.Div([
             html.H4("Trends of Key Metrics Over Time"),
             html.Hr(),
-            html.P([
+            dbc.Alert([
                 "Please note that this part is based on simulated data extending to the previous quarters, as the complete dataset is still being requested. ",
-                html.Br(),
+                # html.Br(),
                 "To understand the logic of the simulation, please see notebooks/data_exploration_time_series.ipynb."],
-                style={'fontSize': '12px'}),  # Adjust the font size as needed,
+                style={'fontSize': '13px', "margin-left": "8px", "margin-right":"9px"},
+                dismissable=True,
+                    is_open=True,
+                    fade=True,
+                    color="warning",),
+            # html.P([
+            #     "Please note that this part is based on simulated data extending to the previous quarters, as the complete dataset is still being requested. ",
+            #     html.Br(),
+            #     "To understand the logic of the simulation, please see notebooks/data_exploration_time_series.ipynb."],
+            #     style={'fontSize': '13px'}),  # Adjust the font size as needed,
+            
             html.Label("Select one metric for Plotting the Trend:", style={"color": "black"}),
             dcc.Dropdown(id="metrics_dropdown",
                         options=[{'label': key, 'value': key} for key in real_life_meaning_mapping.keys()],
                         multi=False,
-                        style={"margin-bottom": "20px"}),
+                        style={"margin-bottom": "20px", "margin-right": "20px"}),
             # Add a Div to display the description of the selected metric
-            html.Div(id='metric-description', children='Description of the metric will be shown after selection!',style={"color": "black", "margin-bottom": "20px"}),
+            html.Div(id='metric-description', children='Description of the metric will be shown after selection!',style={"color": "black", "margin-bottom": "20px", "margin-right": "30px"}),
             dcc.Graph(
                 id='metric-time-series',
                 figure=create_aggregated_time_series_plot(simulated))
         ], style={"margin-bottom": "30px",
-                  "width":"auto"})
+                  "width":"auto", 
+                  })
 
     ]
 )
