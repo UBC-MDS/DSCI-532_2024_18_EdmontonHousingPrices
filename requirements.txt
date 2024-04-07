@@ -9,6 +9,8 @@ dash-bootstrap-components==1.5.*
 dash-vega-components==0.9.*
 altair==5.3.*
 pandas==2.2.*
+joblib==1.3.*
+scikit-learn==1.3.*
 
 # Note: gunicorn is included as it is required for Render and many other web services.
 # It is a HTTP server specifically for Python web applications and handles communication

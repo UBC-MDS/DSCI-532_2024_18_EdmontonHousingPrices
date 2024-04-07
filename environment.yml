@@ -14,6 +14,9 @@ dependencies:
   - numpy
   - scipy
   - gunicorn # For deployment
+  - joblib
   - pip
   - pip:
     - flask-caching
+    - scikit-learn
+    - dash-bootstrap-components
