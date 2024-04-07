@@ -1,7 +1,7 @@
 # Vancouver Airbnb Pricing Dashboard
-A dashboard for investigating Vancouver housing price trends through Airbnb housing data.
+> A dashboard for investigating Vancouver housing price trends through Airbnb housing data.
 
-Group members: Jenny Lee, Wenyu Nie,Ella Hein, Kiersten Gilberg
+**Group members**: Jenny Lee (@jlee2843), Wenyu Nie (@wenyunie),Ella Hein (@ella-irene), Kiersten Gilberg (@Kierst01)
 
 ## Motivation
 This dashboard, created by a team of Master of Data Science students, offers a comprehensive and interactive platform designed to assist Airbnb hosts in Vancouver with pricing their listings. Drawing from a rich dataset of eight years of Airbnb listings in the city, our app provides a deep dive into various aspects of the rental market, from geographical trends to detailed property features.
