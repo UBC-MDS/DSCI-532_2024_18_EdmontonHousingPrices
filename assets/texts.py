@@ -6,7 +6,7 @@ jenny = [
 ]
 
 wenyu = [
-    "Wenyu Li", 
+    "Wenyu Nie", 
     "hardcore_rainbow_icon", 
     "Wenyu has spent five years in the tech industry as a Machine Learning Engineer, focusing on EdTech and content recommendation.",
     15
