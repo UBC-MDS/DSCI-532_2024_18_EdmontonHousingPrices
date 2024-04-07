@@ -12,7 +12,7 @@ from dash import Dash, html, dcc, dash_table, ctx
 from dash import callback_context
 import numpy as np
 
-from assets.texts import jenny, wenyu
+from assets.texts import jenny, wenyu, ella, kiersten
 
 import plotly.graph_objects as go
 
@@ -22,20 +22,24 @@ fig = go.Figure()
 
 dash.register_page(__name__, path="/", title="Credentials")
 
-def make_card(photo, name, description):
+def make_card(photo, name, description, fontsize):
       card = dbc.Card([
         dbc.Row(
             [
                 dbc.Col(
-                    dbc.CardImg(
-                        src=f"assets/{photo}.png",
-                        className="img-fluid rounded-start",
-                        style={'height':'150px', 
-                               'width':'150px',
-                               "text-align": "center",
-                               "top": 0, "left": 50,
-                               "align":"center",}
-                    ),
+                    html.Div(
+                        dbc.CardImg(
+                              src=f"assets/{photo}.png",
+                              className="img-fluid rounded-start",
+                              style={'height':'130px', 'width':'130px'},
+                        ),
+                        style={'display': 'flex',
+                               'justify-content': 'center',
+                              #  'align-items': 'center',
+                               'height': '100%',
+                               'padding-top': 'calc(20% - 65px)',
+                               'padding-bottom': 'calc(20% - 65px)'}
+                  ),
                     className="col-md-4",
                 ),
                 dbc.Col(
@@ -43,7 +47,7 @@ def make_card(photo, name, description):
                         [
                             html.H4(f"{name}", className="card-title"),
                             html.P(
-                                description
+                                description, style={"fontSize":fontsize}
                             ),                            
                         ]
                     ),
@@ -66,18 +70,19 @@ maindiv = html.Div([
                 html.H4("Meet the Team"), style={'display': 'inline-block',
                                                  "text-align": "left",
                                                  "color": "#d85e30",
-                                                #  "font-family": "Arial, sans-serif",
                                                  "font-weight": "italic"},
                                                  align="top", width=3
             ),
             dbc.Col([
                   html.P(
-                        "We are group of data science students enrolled in Master of Data Science program."
+                        ["Hello! Thank you for visiting our dashboard.",
+                         html.Br(),
+                         "We are a cohort of data science students currently pursuing our Master of Data Science degrees at the University of British Columbia."]
                   ),
-                  make_card(jenny[1], jenny[0], jenny[2]),
-                  make_card(wenyu[1], wenyu[0], wenyu[2]),
-                  make_card(jenny[1], jenny[0], jenny[2]),
-                  make_card(jenny[1], jenny[0], jenny[2])
+                  make_card(jenny[1], jenny[0], jenny[2], jenny[3]),
+                  make_card(wenyu[1], wenyu[0], wenyu[2], wenyu[3]),
+                  make_card(ella[1], ella[0], ella[2], ella[3]),
+                  make_card(kiersten[1], kiersten[0], kiersten[2], kiersten[3])
         ])
         ]),
          html.Hr(),
@@ -133,8 +138,8 @@ maindiv = html.Div([
             ),
             dbc.Col([
                   html.Ul([
-                        html.Li("This is where the credentials go"),
-                        html.Li("Okay Sure")
+                        html.Li("Data Source: Inside AirBnB (https://insideairbnb.com)"),
+                        # html.Li("Okay Sure")
                   ], id='credential-list')
 
         ])
