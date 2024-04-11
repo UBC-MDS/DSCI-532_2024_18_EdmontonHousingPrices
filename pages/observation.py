@@ -10,8 +10,8 @@ from dash import callback_context
 import numpy as np
 from data.real_life_meaning_mapping import real_life_meaning_mapping
 import plotly.graph_objects as go
-#import altair as alt
-#import dash_vega_components as dvc
+import altair as alt
+import dash_vega_components as dvc
 
 # from functions.visualization import map_fig
 
@@ -257,7 +257,7 @@ maindiv = html.Div(
                     color="warning",
                     style={'fontSize': '13px'}
                 ),
-                # html.P("In the selected area, the averages are:")
+                # html.P("In the selected area, the medians are:")
             ])
         ]),
 
@@ -278,13 +278,9 @@ maindiv = html.Div(
                 dbc.Card(id='med_bath', color='info', outline=True),
             ], style={"margin-bottom": "20px"}
         ),
-#trying to add histogram here
-        # dbc.Row(
-        #     [
-        #         dvc.Vega(spec=roomtype_histogram.to_dict()),
-                
-        #     ], style={"margin-bottom": "20px"}
-        # ),
+        dbc.Row(
+            dbc.Col(dvc.Vega(id='bar', spec={})),
+        )
     ]
 )
             )
@@ -337,13 +333,11 @@ layout = html.Div(children=[
 
 @app.callback(
     [Output("filtered_df", "data"),
-     Output("map", "figure"),
+    Output("map", "figure"),
     Output("med_accom", "children"),
     Output("med_price", "children"),
     Output("med_beds", "children"),
-    Output("med_bath", "children"),
-    #Output("roomtype_histogram", 'figure')
-    ],
+    Output("med_bath", "children")],
     [Input("neighbourhood_dropdown", "value"),
      Input("people_dropdown", "value"),
      Input("price_slider", "value"),
@@ -427,13 +421,7 @@ def get_location(neighbourhood_dropdown,
         dbc.CardBody(f'{df_filtered["bathroom_adjusted"].median() :.1f}', style={"text-align": "center"})
     ]
 
-    # roomtype_histogram = alt.Chart(df_filtered).mark_bar().encode(
-    #     x = alt.X(roomtype_dropdown).sort('y').title('Room Type'),
-    #     y = alt.Y('count()')
-    # )
-
-
-    return df_filtered.to_dict("records"), fig,  med_accom, med_price, med_beds, med_bath#, roomtype_histogram
+    return df_filtered.to_dict("records"), fig,  med_accom, med_price, med_beds, med_bath
 
 
 @app.callback(
@@ -494,3 +482,60 @@ def create_plot(neighbourhood_dropdown,
 def update_description(selected_metric):
     description = real_life_meaning_mapping[selected_metric]['description']
     return description
+
+#callback for histogram
+@app.callback(
+    Output('bar', 'spec'),
+    [Input("neighbourhood_dropdown", "value"),
+     Input("people_dropdown", "value"),
+     Input("price_slider", "value"),
+     Input("roomtype_dropdown", "value"),
+     Input("num_beds_dropdown", "value"),
+     Input("num_bathrooms_dropdown", "value"),
+     Input("quarter_checklist", "value")
+     ]
+)
+def create_chart(neighbourhood_dropdown, 
+                 people_dropdown, 
+                 price_slider, 
+                 roomtype_dropdown, 
+                 num_beds_dropdown, 
+                 num_bathrooms_dropdown,
+                 quarter_checklist):
+    
+    if quarter_checklist != None:
+        df_filtered = df[df["quarter"].isin(quarter_checklist)]
+
+    if quarter_checklist == None:
+        df_filtered = df.copy()
+
+    # Filter for neighbourhood
+    if neighbourhood_dropdown != None:
+        df_filtered = df_filtered[df_filtered["neighbourhood_cleansed"] == neighbourhood_dropdown]
+
+    # Filter for number of people
+    if people_dropdown != None:
+        df_filtered = df_filtered[df_filtered["accommodates"] == int(people_dropdown)]
+
+    # Filter for price
+    if price_slider != None:
+        df_filtered = df_filtered[(df_filtered["price_adjusted"] >= int(price_slider[0])) & (df_filtered["price_adjusted"] <= int(price_slider[1]))]
+
+    # Filter for roomtype
+    if roomtype_dropdown != None:
+        df_filtered = df_filtered[df_filtered["room_type"] == roomtype_dropdown]
+
+    # Filter for number of rooms
+    if num_beds_dropdown != None:
+        df_filtered = df_filtered[df_filtered["beds"] == num_beds_dropdown]
+
+    # Filter for number of rooms
+    if num_bathrooms_dropdown != None:
+        df_filtered = df_filtered[df_filtered["bathroom_adjusted"] == num_bathrooms_dropdown]
+
+    chart = alt.Chart(df_filtered).mark_bar().encode(
+            x='room_type',
+            y='count()',
+        ).interactive().to_dict()
+    
+    return chart
