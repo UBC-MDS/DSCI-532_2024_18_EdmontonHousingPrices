@@ -1,3 +1,6 @@
+import sys
+sys.path.append('../')
+
 from dash import html
 import dash_bootstrap_components as dbc
 import menu
@@ -11,9 +14,8 @@ import numpy as np
 from data.real_life_meaning_mapping import real_life_meaning_mapping
 import plotly.graph_objects as go
 import pandas as pd
-import map as mp
+from src.map import create_map
 
-#fig = go.Figure()
 dash.register_page(__name__, path="/", title="Observation")
 
 df = pd.read_csv("data/raw/listings.csv")
@@ -203,7 +205,8 @@ tab2_content = dbc.Card(
     dbc.CardBody(
         dbc.Row([
             dbc.Col([
-                dcc.Graph(id = "map")
+                dcc.Graph(id = "map",
+                          figure=create_map(df))
             ])
         ])
     ), className="mt-3"
@@ -391,7 +394,7 @@ def get_location(neighbourhood_dropdown,
         dbc.CardBody(f'{df_filtered["bathroom_adjusted"].mean() :.1f}', style={"text-align": "center"})
     ]
 
-    fig = mp.create_map(df_filtered)
+    fig = create_map(df_filtered)
 
     return df_filtered.to_dict("records"), fig,  avg_accom, avg_price, avg_beds, avg_bath
 
