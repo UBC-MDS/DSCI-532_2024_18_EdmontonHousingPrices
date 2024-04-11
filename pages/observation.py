@@ -10,6 +10,8 @@ from dash import callback_context
 import numpy as np
 from data.real_life_meaning_mapping import real_life_meaning_mapping
 import plotly.graph_objects as go
+#import altair as alt
+#import dash_vega_components as dvc
 
 # from functions.visualization import map_fig
 
@@ -259,19 +261,30 @@ maindiv = html.Div(
             ])
         ]),
 
-
-        dbc.Row(
+#saved in case we want to revert to old card layout
+        # dbc.Row(
+        #     [
+        #         dbc.Col(html.Div(dbc.Card(id='med_accom', color='info', outline=True))),
+        #         dbc.Col(html.Div(dbc.Card(id='med_price', color='info', outline=True))),
+        #         dbc.Col(html.Div(dbc.Card(id='med_beds', color='info', outline=True))),
+        #         dbc.Col(html.Div(dbc.Card(id='med_bath', color='info', outline=True))),
+        #     ], style={"margin-bottom": "20px"}
+        # ),
+        dbc.CardGroup(
             [
-                dbc.Col(html.Div(dbc.Card(id='avg_accom'))),
-                dbc.Col(html.Div(dbc.Card(id='avg_price'))),
+                dbc.Card(id='med_accom', color='info', outline=True),
+                dbc.Card(id='med_price', color='info', outline=True),
+                dbc.Card(id='med_beds', color='info', outline=True),
+                dbc.Card(id='med_bath', color='info', outline=True),
             ], style={"margin-bottom": "20px"}
         ),
-        dbc.Row(
-            [
-                dbc.Col(html.Div(dbc.Card(id='avg_beds'))),
-                dbc.Col(html.Div(dbc.Card(id='avg_bath'))),
-            ], style={"margin-bottom": "20px"}
-        ),
+#trying to add histogram here
+        # dbc.Row(
+        #     [
+        #         dvc.Vega(spec=roomtype_histogram.to_dict()),
+                
+        #     ], style={"margin-bottom": "20px"}
+        # ),
     ]
 )
             )
@@ -325,10 +338,12 @@ layout = html.Div(children=[
 @app.callback(
     [Output("filtered_df", "data"),
      Output("map", "figure"),
-    Output("avg_accom", "children"),
-    Output("avg_price", "children"),
-    Output("avg_beds", "children"),
-    Output("avg_bath", "children")],
+    Output("med_accom", "children"),
+    Output("med_price", "children"),
+    Output("med_beds", "children"),
+    Output("med_bath", "children"),
+    #Output("roomtype_histogram", 'figure')
+    ],
     [Input("neighbourhood_dropdown", "value"),
      Input("people_dropdown", "value"),
      Input("price_slider", "value"),
@@ -392,27 +407,33 @@ def get_location(neighbourhood_dropdown,
         mapbox_zoom=10,
         mapbox_center={"lat": df_filtered["latitude"].mean(), "lon": df_filtered["longitude"].mean()}
     )
-    avg_accom = [
-        dbc.CardHeader('Average Number of Accomodates (Guests)', style={"text-align": "center"}),
-        dbc.CardBody(f'{df_filtered["accommodates"].mean() :.1f}', style={"text-align": "center"})
+    med_accom = [
+        dbc.CardHeader('Median Number of Guests', style={"text-align": "center"}),
+        dbc.CardBody(f'{df_filtered["accommodates"].median() :.1f}', style={"text-align": "center"})
     ]
 
-    avg_price = [
-        dbc.CardHeader('Average Price per Night (CAD)', style={"text-align": "center"}),
-        dbc.CardBody(f'${df_filtered["price_adjusted"].mean() :.1f}', style={"text-align": "center"})
+    med_price = [
+        dbc.CardHeader('Median Price per Night (CAD)', style={"text-align": "center"}),
+        dbc.CardBody(f'${df_filtered["price_adjusted"].median() :.1f}', style={"text-align": "center"})
     ]
 
-    avg_beds = [
-        dbc.CardHeader('Average Number of Available Beds', style={"text-align": "center"}),
-        dbc.CardBody(f'{df_filtered["beds"].mean() :.1f}', style={"text-align": "center"})
+    med_beds = [
+        dbc.CardHeader('Median Number of Beds', style={"text-align": "center"}),
+        dbc.CardBody(f'{df_filtered["beds"].median() :.1f}', style={"text-align": "center"})
     ]
 
-    avg_bath = [
-        dbc.CardHeader('Average Number of Private and Public Washrooms', style={"text-align": "center"}),
-        dbc.CardBody(f'{df_filtered["bathroom_adjusted"].mean() :.1f}', style={"text-align": "center"})
+    med_bath = [
+        dbc.CardHeader('Median Number of Washrooms', style={"text-align": "center"}),
+        dbc.CardBody(f'{df_filtered["bathroom_adjusted"].median() :.1f}', style={"text-align": "center"})
     ]
 
-    return df_filtered.to_dict("records"), fig,  avg_accom, avg_price, avg_beds, avg_bath
+    # roomtype_histogram = alt.Chart(df_filtered).mark_bar().encode(
+    #     x = alt.X(roomtype_dropdown).sort('y').title('Room Type'),
+    #     y = alt.Y('count()')
+    # )
+
+
+    return df_filtered.to_dict("records"), fig,  med_accom, med_price, med_beds, med_bath#, roomtype_histogram
 
 
 @app.callback(
