@@ -10,13 +10,8 @@ from dash import callback_context
 import numpy as np
 from data.real_life_meaning_mapping import real_life_meaning_mapping
 import plotly.graph_objects as go
-
-# from functions.visualization import map_fig
-
-import plotly.graph_objects as go
-import plotly.express as px
-
 import pandas as pd
+import map as mp
 
 #fig = go.Figure()
 dash.register_page(__name__, path="/", title="Observation")
@@ -259,7 +254,6 @@ maindiv = html.Div(
             ])
         ]),
 
-
         dbc.Row(
             [
                 dbc.Col(html.Div(dbc.Card(id='avg_accom'))),
@@ -376,34 +370,6 @@ def get_location(neighbourhood_dropdown,
     # Filter for number of rooms
     if num_bathrooms_dropdown != None:
         df_filtered = df_filtered[df_filtered["bathroom_adjusted"] == num_bathrooms_dropdown]
-    
-    fig = go.Figure(go.Scattermapbox(
-        lat=df_filtered["latitude"],
-        lon=df_filtered["longitude"], 
-        mode='markers',
-        marker=go.scattermapbox.Marker(
-            size=10,
-            opacity = 0.7,
-            color = df_filtered["price_adjusted"],
-            showscale=True,
-            colorscale='Peach'
-        )
-      #  text=[df_filtered["price_adjusted"], df_filtered["beds"]],
-      #  hoverinfo='text'
-        
-    ))
-
-   # fig.update_traces(hovertemplate='Price: %{price_adjusted} <br>Accomodates: %{accommodates}')
-
-
-    fig.update_layout(
-        margin={"r":0,"t":0,"l":0,"b":0},
-        mapbox_style="carto-positron",
-        mapbox_zoom=10,
-        mapbox_center={"lat": df_filtered["latitude"].mean(), "lon": df_filtered["longitude"].mean()}
-    )
-
-   
 
     avg_accom = [
         dbc.CardHeader('Average Number of Accomodates (Guests)', style={"text-align": "center"}),
@@ -424,6 +390,8 @@ def get_location(neighbourhood_dropdown,
         dbc.CardHeader('Average Number of Private and Public Washrooms', style={"text-align": "center"}),
         dbc.CardBody(f'{df_filtered["bathroom_adjusted"].mean() :.1f}', style={"text-align": "center"})
     ]
+
+    fig = mp.create_map(df_filtered)
 
     return df_filtered.to_dict("records"), fig,  avg_accom, avg_price, avg_beds, avg_bath
 
