@@ -272,10 +272,10 @@ maindiv = html.Div(
         # ),
         dbc.CardGroup(
             [
-                dbc.Card(id='med_accom', color='info', outline=True),
-                dbc.Card(id='med_price', color='info', outline=True),
-                dbc.Card(id='med_beds', color='info', outline=True),
-                dbc.Card(id='med_bath', color='info', outline=True),
+                dbc.Card(id='med_accom', color='primary', outline=True),
+                dbc.Card(id='med_price', color='primary', outline=True),
+                dbc.Card(id='med_beds', color='primary', outline=True),
+                dbc.Card(id='med_bath', color='primary', outline=True),
             ], style={"margin-bottom": "20px"}
         ),
         dbc.Row(
