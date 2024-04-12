@@ -20,13 +20,13 @@ def create_map(df_filtered):
         hoverinfo='text',
         marker=dict(
             size=8,
-            opacity=0.8,
+            opacity=0.7,
             color=df_filtered["color"],
-            showscale=True,  # colorscale='color_palette',
+            showscale=False, 
             cmin=0,
             cmax=len(color_palette) - 1
         ),
-        showlegend=False  # Hide legend for map markers
+        showlegend=False  
     ))
 
     # Add invisible legend markers
@@ -37,8 +37,8 @@ def create_map(df_filtered):
             mode='markers',
             marker=dict(
                 color=color,
-                size=10,  # Customize size of legend markers
-                opacity=0  # Make markers invisible
+                size=10,  
+                opacity=1  
             ),
             showlegend=True,
             name=f'${color_bins[i]} - ${color_bins[i + 1]}'
