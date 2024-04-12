@@ -11,6 +11,7 @@ def create_map(df_filtered):
     
     fig = go.Figure()
 
+    # Add map markers
     fig.add_trace(go.Scattermapbox(
         lat=df_filtered["latitude"],
         lon=df_filtered["longitude"],
@@ -21,10 +22,11 @@ def create_map(df_filtered):
             size=8,
             opacity=0.8,
             color=df_filtered["color"],
-            showscale=False,  
+            showscale=True,  # colorscale='color_palette',
             cmin=0,
             cmax=len(color_palette) - 1
-        )
+        ),
+        showlegend=False  # Hide legend for map markers
     ))
 
     # Add invisible legend markers
@@ -35,7 +37,8 @@ def create_map(df_filtered):
             mode='markers',
             marker=dict(
                 color=color,
-                size=0  # Make markers invisible
+                size=10,  # Customize size of legend markers
+                opacity=0  # Make markers invisible
             ),
             showlegend=True,
             name=f'${color_bins[i]} - ${color_bins[i + 1]}'
@@ -47,7 +50,7 @@ def create_map(df_filtered):
         mapbox_style="carto-positron",
         mapbox_zoom=11,
         mapbox_center={"lat": df_filtered["latitude"].mean(), "lon": df_filtered["longitude"].mean()},
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, title=None),
     )
 
     return fig
