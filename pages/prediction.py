@@ -118,8 +118,18 @@ maindiv = html.Div(
                     style={"text-align":"center", "margin-right": "20px"}),
                 className="mb-4", color="light"
             )
-        ], style={"margin-right": "20px"})
+        ], style={"margin-right": "20px"}),
 
+        dbc.Card(
+            dbc.CardBody([
+                dbc.Row([
+                    dbc.Col([
+                        dcc.Graph(id="map", figure=create_map(df))
+                    ])
+                ])
+            ]), 
+            className="mt-3"
+        )
     ]
 )
 
