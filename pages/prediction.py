@@ -195,6 +195,6 @@ def getOptionValues(eval_button, people_dropdown_eval,
         # input_guide = html.P("Your AirBnB Features:")
 
         pred_alert = [
-        html.P(f"Your Predicted Value per Night is: ${pred_val[0]:.3f} CAD.", style={'fontSize': '15px'})
+        html.P(f"Based on the inputs, your predicted Value per Night is: ${pred_val[0]:.3f} CAD.", style={'fontSize': '15px'})
         ]
         return pred_alert, table, input_guide
