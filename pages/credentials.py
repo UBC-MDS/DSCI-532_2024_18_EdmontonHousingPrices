@@ -89,7 +89,7 @@ maindiv = html.Div([
         html.Hr(),
         dbc.Row([
             dbc.Col(
-                html.H4("References"), style={'display': 'inline-block',
+                html.H4("Data Sources"), style={'display': 'inline-block',
                                                  "text-align": "left",
                                                  "color": "#d85e30",
                                                 #  "font-family": "Arial, sans-serif",
@@ -98,11 +98,15 @@ maindiv = html.Div([
             ),
             dbc.Col([
                   html.Ul([
-                        html.Li("Data Source: Inside AirBnB (https://insideairbnb.com)"),
+                        html.Li(
+                              html.A(
+                            "Inside AirBnB",
+                            href="https://insideairbnb.co"
+                        )),
                         # html.Li("Okay Sure")
                   ], id='credential-list')
 
-        ])
+        ], style={"margin-bottom":"30px"})
         ])
     ]),
 
