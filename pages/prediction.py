@@ -103,19 +103,18 @@ maindiv = html.Div(
         html.Div([
         html.H4("Predicted Price per Night (CAD)"),
         html.Hr(),
-        dbc.Alert(["Please make sure to include Longitude and Latitude as a numeric data type."],
-                  id="alert-fade",
-                    dismissable=True,
-                    is_open=True,
-                    fade=True,
-                    color="warning"),
+        # dbc.Alert(["Please make sure to include Longitude and Latitude as a numeric data type."],
+        #           id="alert-fade",
+        #             dismissable=True,
+        #             is_open=True,
+        #             fade=True,
+        #             color="warning"),
         dbc.Card(
                 dbc.CardBody([
-                    html.P("Your Input is: "),
+                    html.P("You did not input any values yet.", id="input_statement"),
                     html.Div(id="user_inputs"),
-                    html.Hr(),
                     html.Div(id="prediction_card")], 
-                    style={"text-align":"center", "margin-right": "20px"}),
+                    style={"text-align":"center", "margin-right": "10px"}),
                 className="mb-4", color="light"
             )
         ], style={"margin-right": "20px"})
@@ -134,7 +133,8 @@ layout = html.Div(children=[
 
 @app.callback(
     [Output("prediction_card", "children"),
-     Output("user_inputs", "children")],
+     Output("user_inputs", "children"),
+     Output("input_statement", "children")],
     [Input('eval_button', 'n_clicks'),
      State("people_dropdown_eval", "value"),
      State("roomtype_dropdown_eval", "value"),
@@ -148,7 +148,7 @@ def getOptionValues(eval_button, people_dropdown_eval,
                     num_beds_dropdown_eval, 
                     num_bathrooms_dropdown_eval,
                     latitude_input, longitude_input):
-    statement = "Hi"
+
     new_df = pd.DataFrame(
         {"longitude": float(longitude_input),
          "latitude": float(latitude_input),
@@ -160,12 +160,41 @@ def getOptionValues(eval_button, people_dropdown_eval,
     )
     if "eval_button" == ctx.triggered_id:
 
-        inputs = f"Longitude: {longitude_input}, \
-            \n Latitude: {latitude_input}, \n Number of Guests: {people_dropdown_eval}, \n Room Type: {roomtype_dropdown_eval}, \n Number of Beds: {num_beds_dropdown_eval}, \n Number of Bathrooms: {num_bathrooms_dropdown_eval}"
+        table_header = [
+            html.Thead(html.Tr([html.Th("Selected Options", style={"font_family": "arial", "color":"#d85e30"}), html.Th("Option Value", style={"font_family": "arial", "color":"#d85e30"})]))
+        ]
+
+        row1 = html.Tr([html.Td("Longitude", style={"font-weight": "bold"}), html.Td(longitude_input)])
+        row2 = html.Tr([html.Td("Latitude", style={"font-weight": "bold"}), html.Td(latitude_input)])
+        row3 = html.Tr([html.Td("Number of Guests", style={"font-weight": "bold"}), html.Td(people_dropdown_eval)])
+        row4 = html.Tr([html.Td("Room Type", style={"font-weight": "bold"}), html.Td(roomtype_dropdown_eval)])
+        row5 = html.Tr([html.Td("Number of Beds", style={"font-weight": "bold"}), html.Td(num_beds_dropdown_eval)])
+        row6 = html.Tr([html.Td("Number of Bathrooms", style={"font-weight": "bold"}), html.Td(num_bathrooms_dropdown_eval)])
+
+        table_body = [html.Tbody([row1, row2, row3, row4, row5, row6])]
+        table = dbc.Table(table_header + table_body,
+                          bordered=True,
+                            # color="primary",
+                            hover=True,
+                            responsive=True,
+                            striped=True)
 
         pred_val = predict_price(new_df)
 
+        input_guide =  html.Div(dbc.Row([
+            dbc.Col([
+                html.H5("Your AirBnB Features:", style={"font_family": "arial"}),
+                # dbc.Alert(["Please make sure to include Longitude and Latitude as a numeric data type."],
+                #   id="alert-fade",
+                #     is_open=True,
+                #     fade=True,
+                #     color="warning"),
+            ]),
+        ]))
+
+        # input_guide = html.P("Your AirBnB Features:")
+
         pred_alert = [
-        html.P(f"Your Predicted Value per Night is: ${pred_val[0]:.3f} CAD.", style={'fontSize': '13px'})
+        html.P(f"Your Predicted Value per Night is: ${pred_val[0]:.3f} CAD.", style={'fontSize': '15px'})
         ]
-        return pred_alert, inputs
+        return pred_alert, table, input_guide
