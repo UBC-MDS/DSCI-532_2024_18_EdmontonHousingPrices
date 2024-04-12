@@ -13,6 +13,7 @@ from dash import callback_context
 import numpy as np
 
 from assets.texts import jenny, wenyu, ella, kiersten
+from src.make_cards import make_card
 
 import plotly.graph_objects as go
 
