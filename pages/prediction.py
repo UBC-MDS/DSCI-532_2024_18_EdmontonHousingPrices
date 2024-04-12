@@ -12,8 +12,7 @@ from dash import Dash, html, dcc, dash_table, ctx, callback
 from dash import callback_context
 import numpy as np
 from src.predict import predict_price  ### This is the function for using model to predict
-
-# from functions.visualization import map_fig
+from src.map import create_map, create_empty_map, create_prediction_map
 
 import plotly.graph_objects as go
 import plotly.express as px
@@ -24,10 +23,12 @@ dash.register_page(__name__, path="/", title="Prediction")
 df = pd.read_csv("data/raw/listings.csv")
 df = df[df["host_location"] == "Vancouver, Canada"]
 df.dropna(subset=['host_location', 'price', 'bathrooms_text'], inplace=True)
-df = df[["neighbourhood_cleansed", "accommodates", "price", "room_type", "beds", "bathrooms_text", "quarter"]]
+
+df = df[["neighbourhood_cleansed", "accommodates", "price", "room_type", "beds", "bathrooms_text", "quarter","longitude", "latitude"]]
 
 df["price_adjusted"] = df["price"].str.extract(r'([0-9.]+)', expand = False).astype(float)
 df["bathroom_adjusted"] = df["bathrooms_text"].str.extract(r'([0-9.]+)', expand = False).astype(float)
+
 
 sidebar = html.Div([
         html.H4("Select Options", style={"margin-left": "14px"}),
@@ -119,16 +120,20 @@ maindiv = html.Div(
             )
         ], style={"margin-right": "20px"}),
 
+        html.Div([
+        html.H4("Input location"),
+        html.Hr(),
         dbc.Card(
             dbc.CardBody([
                 dbc.Row([
                     dbc.Col([
-                        dcc.Graph(id="map", figure=create_map(df))
+                        dcc.Graph(id="map", figure=create_empty_map(df))
                     ])
                 ])
             ]), 
             className="mt-3"
         )
+        ], style={"margin-right": "20px"}) 
     ]
 )
 
