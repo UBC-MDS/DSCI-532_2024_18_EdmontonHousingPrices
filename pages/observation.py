@@ -1,3 +1,6 @@
+import sys
+sys.path.append('../')
+
 from dash import html
 import dash_bootstrap_components as dbc
 import menu
@@ -10,15 +13,9 @@ from dash import callback_context
 import numpy as np
 from data.real_life_meaning_mapping import real_life_meaning_mapping
 import plotly.graph_objects as go
-
-# from functions.visualization import map_fig
-
-import plotly.graph_objects as go
-import plotly.express as px
-
 import pandas as pd
+from src.map import create_map
 
-#fig = go.Figure()
 dash.register_page(__name__, path="/", title="Observation")
 
 df = pd.read_csv("data/raw/listings.csv")
@@ -208,7 +205,8 @@ tab2_content = dbc.Card(
     dbc.CardBody(
         dbc.Row([
             dbc.Col([
-                dcc.Graph(id = "map")
+                dcc.Graph(id = "map",
+                          figure=create_map(df))
             ])
         ])
     ), className="mt-3"
@@ -258,7 +256,6 @@ maindiv = html.Div(
                 # html.P("In the selected area, the averages are:")
             ])
         ]),
-
 
         dbc.Row(
             [
@@ -376,22 +373,7 @@ def get_location(neighbourhood_dropdown,
     # Filter for number of rooms
     if num_bathrooms_dropdown != None:
         df_filtered = df_filtered[df_filtered["bathroom_adjusted"] == num_bathrooms_dropdown]
-    
-    fig = go.Figure(go.Scattermapbox(
-        lat=df_filtered["latitude"],
-        lon=df_filtered["longitude"],
-        mode='markers',
-        marker=go.scattermapbox.Marker(
-            size=9
-        ),
-        text=df_filtered["neighbourhood_cleansed"]
-    ))
 
-    fig.update_layout(
-        mapbox_style="carto-positron",
-        mapbox_zoom=10,
-        mapbox_center={"lat": df_filtered["latitude"].mean(), "lon": df_filtered["longitude"].mean()}
-    )
     avg_accom = [
         dbc.CardHeader('Average Number of Accomodates (Guests)', style={"text-align": "center"}),
         dbc.CardBody(f'{df_filtered["accommodates"].mean() :.1f}', style={"text-align": "center"})
@@ -411,6 +393,8 @@ def get_location(neighbourhood_dropdown,
         dbc.CardHeader('Average Number of Private and Public Washrooms', style={"text-align": "center"}),
         dbc.CardBody(f'{df_filtered["bathroom_adjusted"].mean() :.1f}', style={"text-align": "center"})
     ]
+
+    fig = create_map(df_filtered)
 
     return df_filtered.to_dict("records"), fig,  avg_accom, avg_price, avg_beds, avg_bath
 
