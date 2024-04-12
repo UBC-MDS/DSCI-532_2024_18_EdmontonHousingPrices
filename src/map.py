@@ -50,7 +50,7 @@ def create_map(df_filtered):
         mapbox_style="carto-positron",
         mapbox_zoom=11,
         mapbox_center={"lat": df_filtered["latitude"].mean(), "lon": df_filtered["longitude"].mean()},
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, title=None),
+        legend=dict(orientation="h", yanchor="bottom", y=0, xanchor="center", x=0.5, title=None),
     )
 
     return fig
