@@ -314,8 +314,8 @@ maindiv = html.Div(
 
         dbc.Card([dbc.CardHeader(
             dbc.Tabs([
-                dbc.Tab(tab4_content, label="Categorical Average", tab_style={"margin-left":"0px"}),
-                dbc.Tab(tab3_content, label="Numerical Average", tab_style={"margin-bottom": "10px"})
+                dbc.Tab(tab4_content, label="Categorical Data", tab_style={"margin-left":"0px"}),
+                dbc.Tab(tab3_content, label="Numerical Data", tab_style={"margin-bottom": "10px"})
                 ], active_tab="tab-0")
         ),
         ], style={"margin-left":"10px"})
