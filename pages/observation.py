@@ -40,6 +40,9 @@ default_price = round(df["price_adjusted"].mean(), 2)
 default_beds = round(df["beds"].mean(), 2)
 default_baths = round(df["bathroom_adjusted"].mean(), 2)
 
+df_cleaned = df[["quarter", "neighbourhood_cleansed", "accommodates", "price", "room_type", "beds", "bathrooms_text"]]
+df_cleaned.columns = ["Quarter", "Neighbourhood", "Number of Guests", "Price (CAD)", "Room Type", "Available Beds", "Available Bathrooms"]
+
 # Function to create a time-series plot
 def create_aggregated_time_series_plot(df, y_variable=None):
     if y_variable is None:
@@ -188,8 +191,8 @@ tab1_content = dbc.Card(
                 dash_table.DataTable(
                         style_table={'overflowX': 'auto'},
                         id="filtered_df",
-                        data=df.to_dict("records"),
-                        columns=[{'id': c, 'name': c} for c in df.columns],
+                        data=df_cleaned.to_dict("records"),
+                        columns=[{'id': c, 'name': c} for c in df_cleaned.columns],
                         page_size=10,
                         style_cell_conditional=[
                             {
@@ -200,11 +203,15 @@ tab1_content = dbc.Card(
                         style_as_list_view=True,
                         editable=True,
                         sort_action="native",
-                        style_header={"backgroundColor": "#d85e30",
-                                      "fontweight": "bold", "color": "black",
+                        style_header={"backgroundColor": "#F1F1F1",
+                                      "fontWeight": "bold",
+                                      "font_family": "arial",
+                                      "color": "#d85e30",
+                                      "text_align":"center",
                                       "font_size": "14px"},
                         style_cell={"font_family": "arial",
-                                    "font_size": "12px",
+                                    "font_size": "13px",
+                                    'padding': '5px',
                                     "text_align": "left"},
                         style_data={'backgroundColor': 'transparent'},
                         sort_mode="single")
@@ -230,20 +237,20 @@ tab3_content = dbc.Card(
                 dcc.RadioItems(['Mean', 'Median'], 'Mean', inline=True, id="average_radio", style={"margin-bottom":"20px", "margin-left":"10px"}), 
                 dbc.CardGroup([
                     dbc.Card([
-                        dbc.CardHeader('Number of Guests', style={"text-align": "center"}),
-                        dbc.CardBody(html.P(default_guests, id="avg_guests", style={"text-align": "center", "fontSize":14}))
+                        dbc.CardHeader('Number of Guests', style={"text-align": "center", "color": "#d85e30"}),
+                        dbc.CardBody(html.P(default_guests, id="avg_guests", style={"text-align": "center", "fontSize":16, "fontWeight": "bold",}))
                     ], color='primary', outline=True),
                     dbc.Card([
-                        dbc.CardHeader('Price per Night (CAD)', style={"text-align": "center"}),
-                        dbc.CardBody(html.P(default_price, id="avg_price", style={"text-align": "center", "fontSize":14}))
+                        dbc.CardHeader('Price per Night (CAD)', style={"text-align": "center", "color": "#d85e30",}),
+                        dbc.CardBody(html.P(default_price, id="avg_price", style={"text-align": "center", "fontSize":16, "fontWeight": "bold",}))
                     ], color='primary', outline=True),
                     dbc.Card([
-                        dbc.CardHeader('Number of Beds', style={"text-align": "center"}),
-                        dbc.CardBody(html.P(default_beds, id="avg_beds", style={"text-align": "center", "fontSize":14}))
+                        dbc.CardHeader('Number of Beds', style={"text-align": "center", "color": "#d85e30",}),
+                        dbc.CardBody(html.P(default_beds, id="avg_beds", style={"text-align": "center", "fontSize":16, "fontWeight": "bold",}))
                     ], color='primary', outline=True),
                     dbc.Card([
-                        dbc.CardHeader('Number of Baths', style={"text-align": "center"}),
-                        dbc.CardBody(html.P(default_baths,id="avg_baths", style={"text-align": "center", "fontSize":14}))
+                        dbc.CardHeader('Number of Baths', style={"text-align": "center", "color": "#d85e30"}),
+                        dbc.CardBody(html.P(default_baths,id="avg_baths", style={"text-align": "center", "fontSize":16, "fontWeight": "bold",}))
                     ], color='primary', outline=True),
                 ], style={"margin-bottom": "20px"})
             ]),
@@ -450,7 +457,11 @@ def get_location(neighbourhood_dropdown,
 
     bar_fig = create_bar_graph(df_filtered)
 
-    return df_filtered.to_dict("records"), fig,  avg_guest, avg_price, avg_beds, avg_baths, bar_fig
+    df_cleaned = df_filtered.copy()
+    df_cleaned = df_filtered[["quarter", "neighbourhood_cleansed", "accommodates", "price", "room_type", "beds", "bathrooms_text"]]
+    df_cleaned.columns = ["Quarter", "Neighbourhood", "Number of Guests", "Price (CAD)", "Room Type", "Available Beds", "Available Bathrooms"]
+
+    return df_cleaned.to_dict("records"), fig,  avg_guest, avg_price, avg_beds, avg_baths, bar_fig
 
 
 @app.callback(
