@@ -22,43 +22,6 @@ fig = go.Figure()
 
 dash.register_page(__name__, path="/", title="Credentials")
 
-def make_card(photo, name, description, fontsize):
-    card = dbc.Card([
-        dbc.Row(
-            [
-                dbc.Col(
-                    dbc.CardImg(
-                        src=f"assets/{photo}.png",
-                        className="img-fluid rounded-start",
-                        style={'height': '130px', 'width': '130px', 'object-fit': 'contain'},
-                    ),
-                    className="col-md-3",  # Adjust the column size as necessary for the image
-                    style={'display': 'flex', 'justify-content': 'center', 'align-items': 'center'}
-                ),
-                dbc.Col(
-                    dbc.CardBody(
-                        [
-                            html.H4(name, className="card-title"),
-                            html.P(
-                                description,
-                                className="card-text",
-                                style={"fontSize": fontsize}
-                            ),
-                        ]
-                    ),
-                    className="col-md-9",  # Adjust the column size as necessary for the text
-                ),
-            ],
-            className="g-0 align-items-center",
-            style={'height': '150px'},  # Fixed height for the row
-        ),
-    ],
-    color="primary", outline=True,
-    className="mb-3",
-    style={"maxWidth": "700px"},
-    )
-    return card
-
 maindiv = html.Div([
     dbc.Container([
         dbc.Row([
