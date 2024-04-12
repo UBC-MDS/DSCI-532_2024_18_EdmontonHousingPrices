@@ -29,6 +29,48 @@ df = df[["neighbourhood_cleansed", "accommodates", "price", "room_type", "beds",
 df["price_adjusted"] = df["price"].str.extract(r'([0-9.]+)', expand = False).astype(float)
 df["bathroom_adjusted"] = df["bathrooms_text"].str.extract(r'([0-9.]+)', expand = False).astype(float)
 
+def create_pred_fig(df, trace_add=True):
+    fig = go.Figure()
+
+    sample_df = pd.DataFrame({
+        "longitude": None,
+        "latitude": None
+    }, index=[0])
+
+    if trace_add:
+
+        fig.add_trace(go.Scattergeo(
+            lat=df["latitude"].astype(float),
+            lon=df["longitude"].astype(float),
+            mode='markers',
+            marker=dict(color='rgba(102, 102, 102)', 
+                        size=10, line = dict(width=3,
+			color='rgba(68, 68, 68, 0)')),
+            hoverinfo='none'
+        ))
+
+    fig.update_layout(
+        paper_bgcolor='#EAECEF',
+        plot_bgcolor='#EAECEF',
+        geo = dict(
+            scope='north america',
+            showland = True,
+            projection_scale=2, #this is kind of like zoom
+            center=dict(lat=43, lon=-110.116226),
+            landcolor = "#f0e8e4",
+            subunitcolor = "#fc6603",
+            countrycolor = "#fc6603",
+            countrywidth = 0.8,
+            subunitwidth = 0.5
+        )
+    )
+
+    fig.update_layout(
+        margin=dict(l=20, r=20, t=20, b=20),
+    )
+    
+    return fig
+
 sidebar = html.Div([
         html.H4("Select Options", style={"margin-left": "14px"}),
         html.Hr(),
@@ -114,6 +156,9 @@ maindiv = html.Div(
                     html.P("Your Input is: "),
                     html.Div(id="user_inputs"),
                     html.Hr(),
+                    dcc.Graph(
+                        id='pred_map',
+                        figure=create_pred_fig(None, trace_add=False)),
                     html.Div(id="prediction_card")], 
                     style={"text-align":"center", "margin-right": "20px"}),
                 className="mb-4", color="light"
@@ -134,7 +179,8 @@ layout = html.Div(children=[
 
 @app.callback(
     [Output("prediction_card", "children"),
-     Output("user_inputs", "children")],
+     Output("user_inputs", "children"),
+     Output("pred_map", "figure")],
     [Input('eval_button', 'n_clicks'),
      State("people_dropdown_eval", "value"),
      State("roomtype_dropdown_eval", "value"),
@@ -165,7 +211,11 @@ def getOptionValues(eval_button, people_dropdown_eval,
 
         pred_val = predict_price(new_df)
 
+        new_df["pred_val"] = pred_val
+
         pred_alert = [
         html.P(f"Your Predicted Value per Night is: ${pred_val[0]:.3f} CAD.", style={'fontSize': '13px'})
         ]
-        return pred_alert, inputs
+
+        pred_edited_fig = create_pred_fig(new_df)
+        return pred_alert, inputs, pred_edited_fig
