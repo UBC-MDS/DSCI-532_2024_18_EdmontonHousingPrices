@@ -11,11 +11,16 @@ import numpy as np
 from data.real_life_meaning_mapping import real_life_meaning_mapping
 import plotly.graph_objects as go
 from src.trendplot import create_aggregated_time_series_plot
+import altair as alt
+# import dash_vega_components as dvc
+
 
 # from functions.visualization import map_fig
 
 import plotly.graph_objects as go
 import plotly.express as px
+
+from src.bar_graph import temporary_fig, create_bar_graph
 
 import pandas as pd
 
@@ -31,6 +36,14 @@ df["price_adjusted"] = df["price"].str.extract(r'([0-9.]+)', expand = False).ast
 df["bathroom_adjusted"] = df["bathrooms_text"].str.extract(r'([0-9.]+)', expand = False).astype(float)
 
 simulated = pd.read_csv('data/raw/simulated.csv')
+
+default_guests = round(df["accommodates"].mean(), 2)
+default_price = round(df["price_adjusted"].mean(), 2)
+default_beds = round(df["beds"].mean(), 2)
+default_baths = round(df["bathroom_adjusted"].mean(), 2)
+
+df_cleaned = df[["quarter", "neighbourhood_cleansed", "accommodates", "price", "room_type", "beds", "bathrooms_text"]]
+df_cleaned.columns = ["Quarter", "Neighbourhood", "Number of Guests", "Price (CAD)", "Room Type", "Available Beds", "Available Bathrooms"]
 
 SIDEBAR_STYLE = {
     "top": 42,
@@ -64,7 +77,7 @@ sidebar = html.Div([
                           html.Label("Select Neighbourhood:", style={"color": "black"}),
                           dcc.Dropdown(id="neighbourhood_dropdown",
                                        options=[{"label": r, "value": r} for r in df["neighbourhood_cleansed"].unique().tolist()],
-                                       multi=False,
+                                       multi=True,
                                        style={"margin-bottom": "20px"})
                     ])
               ]),
@@ -143,8 +156,8 @@ tab1_content = dbc.Card(
                 dash_table.DataTable(
                         style_table={'overflowX': 'auto'},
                         id="filtered_df",
-                        data=df.to_dict("records"),
-                        columns=[{'id': c, 'name': c} for c in df.columns],
+                        data=df_cleaned.to_dict("records"),
+                        columns=[{'id': c, 'name': c} for c in df_cleaned.columns],
                         page_size=10,
                         style_cell_conditional=[
                             {
@@ -155,11 +168,15 @@ tab1_content = dbc.Card(
                         style_as_list_view=True,
                         editable=True,
                         sort_action="native",
-                        style_header={"backgroundColor": "#d85e30",
-                                      "fontweight": "bold", "color": "black",
+                        style_header={"backgroundColor": "#F1F1F1",
+                                      "fontWeight": "bold",
+                                      "font_family": "arial",
+                                      "color": "#d85e30",
+                                      "text_align":"center",
                                       "font_size": "14px"},
                         style_cell={"font_family": "arial",
-                                    "font_size": "12px",
+                                    "font_size": "13px",
+                                    'padding': '5px',
                                     "text_align": "left"},
                         style_data={'backgroundColor': 'transparent'},
                         sort_mode="single")
@@ -178,6 +195,44 @@ tab2_content = dbc.Card(
     ), className="mt-3"
 )
 
+tab3_content = dbc.Card(
+    dbc.CardBody([
+        dbc.Row([
+            dbc.Col([
+                dcc.RadioItems(['Mean', 'Median'], 'Mean', inline=True, id="average_radio", style={"margin-bottom":"20px", "margin-left":"10px"}), 
+                dbc.CardGroup([
+                    dbc.Card([
+                        dbc.CardHeader('Number of Guests', style={"text-align": "center", "color": "#d85e30"}),
+                        dbc.CardBody(html.P(default_guests, id="avg_guests", style={"text-align": "center", "fontSize":16, "fontWeight": "bold",}))
+                    ], color='primary', outline=True),
+                    dbc.Card([
+                        dbc.CardHeader('Price per Night (CAD)', style={"text-align": "center", "color": "#d85e30",}),
+                        dbc.CardBody(html.P(default_price, id="avg_price", style={"text-align": "center", "fontSize":16, "fontWeight": "bold",}))
+                    ], color='primary', outline=True),
+                    dbc.Card([
+                        dbc.CardHeader('Number of Beds', style={"text-align": "center", "color": "#d85e30",}),
+                        dbc.CardBody(html.P(default_beds, id="avg_beds", style={"text-align": "center", "fontSize":16, "fontWeight": "bold",}))
+                    ], color='primary', outline=True),
+                    dbc.Card([
+                        dbc.CardHeader('Number of Baths', style={"text-align": "center", "color": "#d85e30"}),
+                        dbc.CardBody(html.P(default_baths,id="avg_baths", style={"text-align": "center", "fontSize":16, "fontWeight": "bold",}))
+                    ], color='primary', outline=True),
+                ], style={"margin-bottom": "20px"})
+            ]),
+        ]),
+    ]),
+    className="mt-3", 
+)
+
+tab4_content = dbc.Card([
+    dbc.CardBody([
+        dbc.Row([
+            dbc.Col([
+                dcc.Graph(id="histograms_fig", figure=create_bar_graph(df))
+            ])
+        ])
+    ], style={"margin-top":"10px", "margin-left":"10px"})
+], style={"margin-top":"10px"})
 
 maindiv = html.Div(
     id="first-div",
@@ -206,40 +261,34 @@ maindiv = html.Div(
             html.P(
                 dbc.Container([
                     
-        dbc.Row([
-            dbc.Col([
-                dbc.Alert(
-                    ["Summary statistics are calculated based on the filters that are applied.",
-                     html.Br(),
-                     "If no filter is applied, summary statistics are not shown."],
-                    id="alert-fade",
-                    dismissable=True,
-                    is_open=True,
-                    fade=True,
-                    color="warning",
-                    style={'fontSize': '13px'}
-                ),
-                # html.P("In the selected area, the averages are:")
-            ])
-        ]),
+        # dbc.Row([
+        #     dbc.Col([
+        #         dbc.Alert(
+        #             ["Summary statistics are calculated based on the filters that are applied.",
+        #              html.Br(),
+        #              "If no filter is applied, summary statistics are not shown."],
+        #             id="alert-fade",
+        #             dismissable=True,
+        #             is_open=True,
+        #             fade=True,
+        #             color="warning",
+        #             style={'fontSize': '13px'}
+        #         ),
+        #     ])
+        # ]),
 
-
-        dbc.Row(
-            [
-                dbc.Col(html.Div(dbc.Card(id='avg_accom'))),
-                dbc.Col(html.Div(dbc.Card(id='avg_price'))),
-            ], style={"margin-bottom": "20px"}
+        dbc.Card([dbc.CardHeader(
+            dbc.Tabs([
+                dbc.Tab(tab4_content, label="Categorical Data", tab_style={"margin-left":"0px"}),
+                dbc.Tab(tab3_content, label="Numerical Data", tab_style={"margin-bottom": "10px"})
+                ], active_tab="tab-0")
         ),
-        dbc.Row(
-            [
-                dbc.Col(html.Div(dbc.Card(id='avg_beds'))),
-                dbc.Col(html.Div(dbc.Card(id='avg_bath'))),
-            ], style={"margin-bottom": "20px"}
-        ),
-    ]
+        ], style={"margin-left":"10px"})
+    ],
 )
             )
         ], style={"margin-bottom": "30px",
+                  "margin-right":"10px",
                   "width":"auto"}),
 
         html.Div([
@@ -294,18 +343,20 @@ layout = html.Div(children=[
 
 @app.callback(
     [Output("filtered_df", "data"),
-     Output("map", "figure"),
-    Output("avg_accom", "children"),
+    Output("map", "figure"),
+    Output("avg_guests", "children"),
     Output("avg_price", "children"),
     Output("avg_beds", "children"),
-    Output("avg_bath", "children")],
+    Output("avg_baths", "children"),
+    Output("histograms_fig", "figure")],
     [Input("neighbourhood_dropdown", "value"),
      Input("people_dropdown", "value"),
      Input("price_slider", "value"),
      Input("roomtype_dropdown", "value"),
      Input("num_beds_dropdown", "value"),
      Input("num_bathrooms_dropdown", "value"),
-     Input("quarter_checklist", "value")
+     Input("quarter_checklist", "value"),
+     Input("average_radio", "value")
      ],
      prevent_intial_call=True)
 
@@ -315,7 +366,8 @@ def get_location(neighbourhood_dropdown,
                  roomtype_dropdown, 
                  num_beds_dropdown, 
                  num_bathrooms_dropdown,
-                 quarter_checklist):
+                 quarter_checklist,
+                 average_radio):
     
     if quarter_checklist != None:
         df_filtered = df[df["quarter"].isin(quarter_checklist)]
@@ -325,7 +377,7 @@ def get_location(neighbourhood_dropdown,
 
     # Filter for neighbourhood
     if neighbourhood_dropdown != None:
-        df_filtered = df_filtered[df_filtered["neighbourhood_cleansed"] == neighbourhood_dropdown]
+        df_filtered = df_filtered[df_filtered["neighbourhood_cleansed"].isin(neighbourhood_dropdown)]
 
     # Filter for number of people
     if people_dropdown != None:
@@ -362,27 +414,25 @@ def get_location(neighbourhood_dropdown,
         mapbox_zoom=10,
         mapbox_center={"lat": df_filtered["latitude"].mean(), "lon": df_filtered["longitude"].mean()}
     )
-    avg_accom = [
-        dbc.CardHeader('Average Number of Accomodates (Guests)', style={"text-align": "center"}),
-        dbc.CardBody(f'{df_filtered["accommodates"].mean() :.1f}', style={"text-align": "center"})
-    ]
 
-    avg_price = [
-        dbc.CardHeader('Average Price per Night (CAD)', style={"text-align": "center"}),
-        dbc.CardBody(f'${df_filtered["price_adjusted"].mean() :.1f}', style={"text-align": "center"})
-    ]
+    if average_radio == "Mean":
+        avg_guest = round(df_filtered["accommodates"].mean(), 2)
+        avg_price = round(df_filtered["price_adjusted"].mean(), 2)
+        avg_beds = round(df_filtered["beds"].mean(), 2)
+        avg_baths = round(df_filtered["bathroom_adjusted"].mean(), 2)
+    elif average_radio == "Median":
+        avg_guest = round(df_filtered["accommodates"].median(), 3)
+        avg_price = round(df_filtered["price_adjusted"].median(), 3)
+        avg_beds = round(df_filtered["beds"].median(), 3)
+        avg_baths = round(df_filtered["bathroom_adjusted"].median(), 3)
 
-    avg_beds = [
-        dbc.CardHeader('Average Number of Available Beds', style={"text-align": "center"}),
-        dbc.CardBody(f'{df_filtered["beds"].mean() :.1f}', style={"text-align": "center"})
-    ]
+    bar_fig = create_bar_graph(df_filtered)
 
-    avg_bath = [
-        dbc.CardHeader('Average Number of Private and Public Washrooms', style={"text-align": "center"}),
-        dbc.CardBody(f'{df_filtered["bathroom_adjusted"].mean() :.1f}', style={"text-align": "center"})
-    ]
+    df_cleaned = df_filtered.copy()
+    df_cleaned = df_filtered[["quarter", "neighbourhood_cleansed", "accommodates", "price", "room_type", "beds", "bathrooms_text"]]
+    df_cleaned.columns = ["Quarter", "Neighbourhood", "Number of Guests", "Price (CAD)", "Room Type", "Available Beds", "Available Bathrooms"]
 
-    return df_filtered.to_dict("records"), fig,  avg_accom, avg_price, avg_beds, avg_bath
+    return df_cleaned.to_dict("records"), fig,  avg_guest, avg_price, avg_beds, avg_baths, bar_fig
 
 
 @app.callback(
@@ -407,7 +457,7 @@ def create_plot(neighbourhood_dropdown,
     filtered_simulated = simulated.copy() 
     # Filter for neighbourhood
     if neighbourhood_dropdown != None:
-        filtered_simulated = filtered_simulated[filtered_simulated["neighbourhood"] == neighbourhood_dropdown]
+        filtered_simulated = filtered_simulated[filtered_simulated["neighbourhood"].isin(neighbourhood_dropdown)]
 
     # Filter for number of people
     if people_dropdown != None:
@@ -424,7 +474,6 @@ def create_plot(neighbourhood_dropdown,
 
     # Filter for number of rooms
     if num_bathrooms_dropdown != None:
-
         filtered_simulated = filtered_simulated[filtered_simulated["number_of_bathrooms"] == num_bathrooms_dropdown]
 
     # Select metric
