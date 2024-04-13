@@ -14,7 +14,6 @@ import numpy as np
 from data.real_life_meaning_mapping import real_life_meaning_mapping
 import plotly.graph_objects as go
 from src.trendplot import create_aggregated_time_series_plot
-import altair as alt
 # import dash_vega_components as dvc
 # from functions.visualization import map_fig
 

@@ -190,8 +190,8 @@ def getOptionValues(n_clicks, people_dropdown_eval,
          "bathroom_adjusted": float(num_bathrooms_dropdown_eval) if num_bathrooms_dropdown_eval is not None else None},
          index=[0]
     )
-    print(new_df["latitude"].item())
-    print(type(new_df["latitude"].item()))
+    # print(new_df["latitude"].item())
+    # print(type(new_df["latitude"].item()))
     if "eval_button" == ctx.triggered_id:
 
         table_header = [
