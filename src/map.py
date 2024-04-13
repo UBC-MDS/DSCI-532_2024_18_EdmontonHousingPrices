@@ -16,7 +16,7 @@ def create_map(df_filtered):
         lat=df_filtered["latitude"],
         lon=df_filtered["longitude"],
         mode="markers",
-        text=[str(df_filtered["neighbourhood_cleansed"][i]) + '<br>' + 
+        text=[str(df_filtered["neighbourhood_cleansed"][i]) + '<br>' +
               "Price/ Night (CAD): $" + str(df_filtered["price_adjusted"][i]) + '<br>' + 
               "Room Type: " + str(df_filtered["room_type"][i]) + '<br>' +
               "Beds: " + str(df_filtered["beds"][i]) + '<br>' + 

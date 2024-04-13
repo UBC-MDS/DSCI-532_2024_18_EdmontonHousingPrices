@@ -222,9 +222,9 @@ maindiv = html.Div(
         dbc.Card([
         dbc.CardHeader(
             dbc.Tabs([
-                dbc.Tab(tab1_content, label="View as List", tab_style={"marginLeft": "8px",
+                dbc.Tab(tab2_content, label="View in Map", tab_style={"marginLeft": "8px",
                                                                        "marginBottom": "10px"}),
-                dbc.Tab(tab2_content, label="View in Map", tab_style={"marginRight": "20px"})
+                dbc.Tab(tab1_content, label="View as List", tab_style={"marginRight": "20px"})
                 ], active_tab="tab-0")
         ),
         ], className="mt-3",
