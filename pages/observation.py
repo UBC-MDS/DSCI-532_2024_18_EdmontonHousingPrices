@@ -10,8 +10,10 @@ from dash import callback_context
 import numpy as np
 from data.real_life_meaning_mapping import real_life_meaning_mapping
 import plotly.graph_objects as go
+from src.trendplot import create_aggregated_time_series_plot
 import altair as alt
 # import dash_vega_components as dvc
+
 
 # from functions.visualization import map_fig
 
@@ -42,48 +44,6 @@ default_baths = round(df["bathroom_adjusted"].mean(), 2)
 
 df_cleaned = df[["quarter", "neighbourhood_cleansed", "accommodates", "price", "room_type", "beds", "bathrooms_text"]]
 df_cleaned.columns = ["Quarter", "Neighbourhood", "Number of Guests", "Price (CAD)", "Room Type", "Available Beds", "Available Bathrooms"]
-
-# Function to create a time-series plot
-def create_aggregated_time_series_plot(df, y_variable=None):
-    if y_variable is None:
-        y_variable = 'Daily Price'
-    y_name = y_variable
-    y_variable = real_life_meaning_mapping[y_name]['column_name']
-    df = df.copy()
-    year_quarter = df['quarter'].str.split('-', expand=True)
-    
-    # Convert year and quarter into a Period object
-    df['quarter'] = pd.PeriodIndex(year=year_quarter[0].astype(int), 
-                                   quarter=year_quarter[1].astype(int), 
-                                   freq='Q')
-    df['quarter'] = df['quarter'].dt.strftime('%Y-Q%q')
-    # Aggregating the data
-    aggregated_df = df.groupby('quarter')[y_variable].mean().reset_index()
-    median_aggregated_df = df.groupby('quarter')[y_variable].median().reset_index()
-
-    # Creating an empty figure and adding both mean and median as separate traces
-    fig = go.Figure()
-
-    # Add Mean trace
-    fig.add_trace(go.Scatter(x=aggregated_df['quarter'], y=aggregated_df[y_variable],
-                             mode='lines', name='Mean'))
-
-    # Adding median trend line
-    fig.add_trace(go.Scatter(x=median_aggregated_df['quarter'], y=median_aggregated_df[y_variable],
-                             mode='lines', name='Median', line=dict(dash='dash')))
-    # Center the title
-    fig.update_layout(
-        title={
-            'text': f'Trend of the Metric {y_name}',
-            'y':0.9,
-            'x':0.5,
-            'xanchor': 'center',
-            'yanchor': 'top'
-        }
-    )
-    fig.update_xaxes(title_text='Quarter', tickangle=-45)
-    fig.update_yaxes(title_text=f'Average {y_name}')
-    return fig
 
 SIDEBAR_STYLE = {
     "top": 42,
@@ -182,7 +142,12 @@ sidebar = html.Div([
               ])
 
         ])
-])
+], style={
+    'position': 'sticky',
+    'top': '20px',  # Adjust this value based on your header's height or navbar if present
+    'height': 'calc(100vh - 40px)',  # Adjust the height calculation based on your layout needs
+    'overflow-y': 'auto'
+    })
 
 tab1_content = dbc.Card(
     dbc.CardBody(
@@ -330,9 +295,13 @@ maindiv = html.Div(
             html.H4("Trends of Key Metrics Over Time"),
             html.Hr(),
             dbc.Alert([
-                "Please note that this part is based on simulated data extending to the previous quarters, as the complete dataset is still being requested. ",
-                # html.Br(),
-                "To understand the logic of the simulation, please see notebooks/data_exploration_time_series.ipynb."],
+                        "Please note that this part is based on simulated data extending to the previous quarters, as the complete dataset is still being requested. ",
+                        html.Br(),
+                        "To understand the logic of the simulation, please see the time series exploration with ",
+                        html.A("the notebook", 
+                            href="https://github.com/UBC-MDS/DSCI-532_2024_18_VancouverAirbnbPrices/blob/main/notebooks/data_exploration_time_series.ipynb"),
+                        "."
+                        ],
                 style={'fontSize': '13px', "margin-left": "8px", "margin-right":"9px"},
                 dismissable=True,
                     is_open=True,
@@ -353,7 +322,9 @@ maindiv = html.Div(
             html.Div(id='metric-description', children='Description of the metric will be shown after selection!',style={"color": "black", "margin-bottom": "20px", "margin-right": "30px"}),
             dcc.Graph(
                 id='metric-time-series',
-                figure=create_aggregated_time_series_plot(simulated))
+                figure=create_aggregated_time_series_plot(
+                    simulated[(simulated["price"] >= 0) & (simulated["price"] <= int(df["price_adjusted"].mean()))])
+                )
         ], style={"margin-bottom": "30px",
                   "width":"auto", 
                   })
@@ -473,8 +444,7 @@ def get_location(neighbourhood_dropdown,
      Input("num_beds_dropdown", "value"),
      Input("num_bathrooms_dropdown", "value"),
      Input("metrics_dropdown", "value")
-     ],
-     prevent_intial_call=True)
+     ])
 def create_plot(neighbourhood_dropdown, 
                  people_dropdown, 
                  price_slider, 
