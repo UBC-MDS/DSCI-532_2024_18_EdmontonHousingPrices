@@ -88,10 +88,6 @@ def create_empty_map(df_filtered):
 
 def create_prediction_map(df_filtered):
     '''Maps one point, based on latitude inputs'''
-    color_bins = [0, 150, 300, 700, float('inf')]
-    color_palette = ['#FED976', '#FD8F3C', '#E3211C', '#7F0F27']
-    
- #   df_filtered.reset_index(drop=True, inplace=True)
     fig = go.Figure()
 
     # Add map marker
@@ -99,15 +95,11 @@ def create_prediction_map(df_filtered):
         lat=df_filtered["latitude"],
         lon=df_filtered["longitude"],
         mode="markers",
-       # text=[str(df_filtered["neighbourhood_cleansed"][i]) + '<br>' + "Price: $" + str(df_filtered["price_adjusted"][i]) + '<br>' + "Accommodates: " + str(df_filtered["accommodates"][i]) for i in range(df_filtered.shape[0])],
-     #   hoverinfo='text',
         marker=dict(
             size=15,
             opacity=1,
             color='#EA5420',
             showscale=False, 
-       #     cmin=0,
-       #     cmax=len(color_palette) - 1
         ),
         showlegend=False  
     ))
@@ -117,8 +109,7 @@ def create_prediction_map(df_filtered):
         margin={"r": 0, "t": 0, "l": 0, "b": 0},
         mapbox_style="carto-positron",
         mapbox_zoom=11,
-        mapbox_center={"lat": df_filtered["latitude"].mean(), "lon": df_filtered["longitude"].mean()},
-      #  legend=dict(orientation="h", yanchor="bottom", y=0, xanchor="center", x=0.5, title=None),
+        mapbox_center={"lat": df_filtered["latitude"].mean(), "lon": df_filtered["longitude"].mean()}
     )
 
     return fig

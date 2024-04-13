@@ -156,8 +156,8 @@ layout = html.Div(children=[
      State("roomtype_dropdown_eval", "value"),
      State("num_beds_dropdown_eval", "value"),
      State("num_bathrooms_dropdown_eval", "value"),
-     State("longitude_input", "value"),
-     State("latitude_input", "value")]
+     State("latitude_input", "value"),
+     State("longitude_input", "value")]
 )
 def getOptionValues(eval_button, people_dropdown_eval, 
                     roomtype_dropdown_eval, 
