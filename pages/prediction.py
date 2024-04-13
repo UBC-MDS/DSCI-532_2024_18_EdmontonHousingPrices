@@ -146,8 +146,8 @@ layout = html.Div(children=[
 def getOptionValues(eval_button, people_dropdown_eval, 
                     roomtype_dropdown_eval, 
                     num_beds_dropdown_eval, 
-                    num_bathrooms_dropdown_eval,
-                    latitude_input, longitude_input):
+                    num_bathrooms_dropdown_eval, longitude_input,
+                    latitude_input):
     statement = "Hi"
     new_df = pd.DataFrame(
         {"longitude": float(longitude_input),

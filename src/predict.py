@@ -9,6 +9,26 @@ model = joblib.load('models/price_model.pkl')  # see the notebook notebooks/data
 
 
 def preprocess_data(data): # assumes the incoming data to be the same with the transformed data in observation.py
+    # Predefined summary statistics
+    mean_values = {
+        'longitude': -123.112161,
+        'latitude': 49.262765,
+        'accommodates': 3.545970,
+        'beds': 1.933792,
+        'bathroom_adjusted': 1.351025
+    }
+    mode_values = {
+        'room_type': 'Entire home/apt'  # Most common value
+    }
+
+    # Fill missing values with predefined means for numerical columns
+    for column, mean_value in mean_values.items():
+        data[column].fillna(mean_value, inplace=True)
+    
+    # Fill missing values with predefined mode for categorical columns
+    for column, mode_value in mode_values.items():
+        data[column].fillna(mode_value, inplace=True)
+
     # Ensure that the categorical variables are encoded appropriately
     data['room_type'] = data['room_type'].astype('category')
     return data
