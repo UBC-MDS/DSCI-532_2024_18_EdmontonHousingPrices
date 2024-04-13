@@ -117,7 +117,7 @@ sidebar = html.Div([
                           html.Label("Select Neighbourhood:", style={"color": "black"}),
                           dcc.Dropdown(id="neighbourhood_dropdown",
                                        options=[{"label": r, "value": r} for r in df["neighbourhood_cleansed"].unique().tolist()],
-                                       multi=False,
+                                       multi=True,
                                        style={"margin-bottom": "20px"})
                     ])
               ]),
@@ -406,7 +406,7 @@ def get_location(neighbourhood_dropdown,
 
     # Filter for neighbourhood
     if neighbourhood_dropdown != None:
-        df_filtered = df_filtered[df_filtered["neighbourhood_cleansed"] == neighbourhood_dropdown]
+        df_filtered = df_filtered[df_filtered["neighbourhood_cleansed"].isin(neighbourhood_dropdown)]
 
     # Filter for number of people
     if people_dropdown != None:
@@ -487,7 +487,7 @@ def create_plot(neighbourhood_dropdown,
     filtered_simulated = simulated.copy() 
     # Filter for neighbourhood
     if neighbourhood_dropdown != None:
-        filtered_simulated = filtered_simulated[filtered_simulated["neighbourhood"] == neighbourhood_dropdown]
+        filtered_simulated = filtered_simulated[filtered_simulated["neighbourhood"].isin(neighbourhood_dropdown)]
 
     # Filter for number of people
     if people_dropdown != None:
@@ -504,7 +504,6 @@ def create_plot(neighbourhood_dropdown,
 
     # Filter for number of rooms
     if num_bathrooms_dropdown != None:
-
         filtered_simulated = filtered_simulated[filtered_simulated["number_of_bathrooms"] == num_bathrooms_dropdown]
 
     # Select metric
