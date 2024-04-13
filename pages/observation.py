@@ -58,7 +58,7 @@ def create_aggregated_time_series_plot(df, y_variable=None):
 
     # Adding median trend line
     fig.add_trace(go.Scatter(x=median_aggregated_df['quarter'], y=median_aggregated_df[y_variable],
-                             mode='lines', name='Median', line=dict(dash='dash')))
+                             mode='lines', name='Median'))
     # Center the title
     fig.update_layout(
         title={
@@ -170,7 +170,12 @@ sidebar = html.Div([
               ])
 
         ])
-])
+], style={
+    'position': 'sticky',
+    'top': '20px',  # Adjust this value based on your header's height or navbar if present
+    'height': 'calc(100vh - 40px)',  # Adjust the height calculation based on your layout needs
+    'overflow-y': 'auto'
+    })
 
 tab1_content = dbc.Card(
     dbc.CardBody(
@@ -282,9 +287,13 @@ maindiv = html.Div(
             html.H4("Trends of Key Metrics Over Time"),
             html.Hr(),
             dbc.Alert([
-                "Please note that this part is based on simulated data extending to the previous quarters, as the complete dataset is still being requested. ",
-                # html.Br(),
-                "To understand the logic of the simulation, please see notebooks/data_exploration_time_series.ipynb."],
+                        "Please note that this part is based on simulated data extending to the previous quarters, as the complete dataset is still being requested. ",
+                        html.Br(),
+                        "To understand the logic of the simulation, please see the time series exploration with ",
+                        html.A("the notebook", 
+                            href="https://github.com/UBC-MDS/DSCI-532_2024_18_VancouverAirbnbPrices/blob/main/notebooks/data_exploration_time_series.ipynb"),
+                        "."
+                        ],
                 style={'fontSize': '13px', "margin-left": "8px", "margin-right":"9px"},
                 dismissable=True,
                     is_open=True,
@@ -305,7 +314,9 @@ maindiv = html.Div(
             html.Div(id='metric-description', children='Description of the metric will be shown after selection!',style={"color": "black", "margin-bottom": "20px", "margin-right": "30px"}),
             dcc.Graph(
                 id='metric-time-series',
-                figure=create_aggregated_time_series_plot(simulated))
+                figure=create_aggregated_time_series_plot(
+                    simulated[(simulated["price"] >= 0) & (simulated["price"] <= int(df["price_adjusted"].mean()))])
+                )
         ], style={"margin-bottom": "30px",
                   "width":"auto", 
                   })
@@ -424,8 +435,7 @@ def get_location(neighbourhood_dropdown,
      Input("num_beds_dropdown", "value"),
      Input("num_bathrooms_dropdown", "value"),
      Input("metrics_dropdown", "value")
-     ],
-     prevent_intial_call=True)
+     ])
 def create_plot(neighbourhood_dropdown, 
                  people_dropdown, 
                  price_slider, 
