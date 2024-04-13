@@ -176,7 +176,7 @@ layout = html.Div(children=[
      State("longitude_input", "value"),
      State("latitude_input", "value")]
 )
-def getOptionValues(eval_button, people_dropdown_eval, 
+def getOptionValues(n_clicks, people_dropdown_eval, 
                     roomtype_dropdown_eval, 
                     num_beds_dropdown_eval, 
                     num_bathrooms_dropdown_eval,
@@ -191,6 +191,7 @@ def getOptionValues(eval_button, people_dropdown_eval,
          "bathroom_adjusted": float(num_bathrooms_dropdown_eval)},
          index=[0]
     )
+    print(new_df["latitude"].item())
     if "eval_button" == ctx.triggered_id:
 
         table_header = [
@@ -216,7 +217,7 @@ def getOptionValues(eval_button, people_dropdown_eval,
 
         input_guide =  html.Div(dbc.Row([
             dbc.Col([
-                html.H6("View your selected housing features:", style={"font_family": "arial"}),
+                html.H5("List of Features", style={"font_family": "arial"}),
                 dbc.Alert(["If an input is missing, median value for the particular input is used in making prediction."],
                   id="alert-fade",
                     is_open=True,
@@ -232,6 +233,9 @@ def getOptionValues(eval_button, people_dropdown_eval,
         html.P(f"Based on the inputs, your predicted Value per Night is: ${pred_val[0]:.3f} CAD.", style={'fontSize': '15px'})
         ]
 
-        fig = create_prediction_map(new_df)
+        if n_clicks is None:
+            fig = create_empty_map(df)
+        else:
+            fig = create_prediction_map(new_df)
 
         return pred_alert, table, input_guide, fig
