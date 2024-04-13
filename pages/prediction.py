@@ -127,7 +127,7 @@ maindiv = html.Div(
             dbc.CardBody([
                 dbc.Row([
                     dbc.Col([
-                        dcc.Graph(id="map", figure=create_empty_map(df))
+                        dcc.Graph(id="prediction_map", figure=create_empty_map(df))
                     ])
                 ])
             ]), 
@@ -149,7 +149,8 @@ layout = html.Div(children=[
 @app.callback(
     [Output("prediction_card", "children"),
      Output("user_inputs", "children"),
-     Output("input_statement", "children")],
+     Output("input_statement", "children"),
+     Output("prediction_map", "figure")],
     [Input('eval_button', 'n_clicks'),
      State("people_dropdown_eval", "value"),
      State("roomtype_dropdown_eval", "value"),
@@ -212,4 +213,7 @@ def getOptionValues(eval_button, people_dropdown_eval,
         pred_alert = [
         html.P(f"Based on the inputs, your predicted Value per Night is: ${pred_val[0]:.3f} CAD.", style={'fontSize': '15px'})
         ]
-        return pred_alert, table, input_guide
+
+        fig = create_prediction_map(new_df)
+
+        return pred_alert, table, input_guide, fig

@@ -91,12 +91,10 @@ def create_prediction_map(df_filtered):
     color_bins = [0, 150, 300, 700, float('inf')]
     color_palette = ['#FED976', '#FD8F3C', '#E3211C', '#7F0F27']
     
-    df_filtered.reset_index(drop=True, inplace=True)
-   # df_filtered['color'] = pd.cut(df_filtered['price_adjusted'], bins=color_bins, labels=color_palette)
-    
+ #   df_filtered.reset_index(drop=True, inplace=True)
     fig = go.Figure()
 
-    # Add map markers
+    # Add map marker
     fig.add_trace(go.Scattermapbox(
         lat=df_filtered["latitude"],
         lon=df_filtered["longitude"],
@@ -106,7 +104,7 @@ def create_prediction_map(df_filtered):
         marker=dict(
             size=15,
             opacity=1,
-      #      color=df_filtered["color"],
+            color='#EA5420',
             showscale=False, 
        #     cmin=0,
        #     cmax=len(color_palette) - 1
