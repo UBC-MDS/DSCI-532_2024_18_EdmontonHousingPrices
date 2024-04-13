@@ -26,6 +26,7 @@ def create_map(df_filtered):
             cmin=0,
             cmax=len(color_palette) - 1
         ),
+        customdata=df_filtered,
         showlegend=False  
     ))
 
@@ -51,6 +52,7 @@ def create_map(df_filtered):
         mapbox_zoom=11,
         mapbox_center={"lat": df_filtered["latitude"].mean(), "lon": df_filtered["longitude"].mean()},
         legend=dict(orientation="h", yanchor="bottom", y=0, xanchor="center", x=0.5, title=None),
+        dragmode='select'
     )
 
     return fig

@@ -332,7 +332,8 @@ layout = html.Div(children=[
      Input("roomtype_dropdown", "value"),
      Input("num_beds_dropdown", "value"),
      Input("num_bathrooms_dropdown", "value"),
-     Input("quarter_checklist", "value")
+     Input("quarter_checklist", "value"),
+     Input("map", "selectedData")
      ],
      prevent_intial_call=True)
 
@@ -342,7 +343,8 @@ def get_location(neighbourhood_dropdown,
                  roomtype_dropdown, 
                  num_beds_dropdown, 
                  num_bathrooms_dropdown,
-                 quarter_checklist):
+                 quarter_checklist,
+                 selectedData):
     
     if quarter_checklist != None:
         df_filtered = df[df["quarter"].isin(quarter_checklist)]
@@ -374,6 +376,14 @@ def get_location(neighbourhood_dropdown,
     if num_bathrooms_dropdown != None:
         df_filtered = df_filtered[df_filtered["bathroom_adjusted"] == num_bathrooms_dropdown]
 
+    fig = create_map(df_filtered)
+
+    if selectedData is not None:
+        # details = [point['text'] for point in points]
+        selected_data = pd.DataFrame([point['customdata'] for point in selectedData['points']])
+        selected_data.columns = df.columns
+        df_filtered = selected_data
+
     avg_accom = [
         dbc.CardHeader('Average Number of Accomodates (Guests)', style={"text-align": "center"}),
         dbc.CardBody(f'{df_filtered["accommodates"].mean() :.1f}', style={"text-align": "center"})
@@ -394,8 +404,6 @@ def get_location(neighbourhood_dropdown,
         dbc.CardBody(f'{df_filtered["bathroom_adjusted"].mean() :.1f}', style={"text-align": "center"})
     ]
 
-    fig = create_map(df_filtered)
-
     return df_filtered.to_dict("records"), fig,  avg_accom, avg_price, avg_beds, avg_bath
 
 
@@ -407,7 +415,8 @@ def get_location(neighbourhood_dropdown,
      Input("roomtype_dropdown", "value"),
      Input("num_beds_dropdown", "value"),
      Input("num_bathrooms_dropdown", "value"),
-     Input("metrics_dropdown", "value")
+     Input("metrics_dropdown", "value"),
+     Input("map", "selectedData")
      ],
      prevent_intial_call=True)
 def create_plot(neighbourhood_dropdown, 
@@ -416,10 +425,27 @@ def create_plot(neighbourhood_dropdown,
                  roomtype_dropdown, 
                  num_beds_dropdown, 
                  num_bathrooms_dropdown,
-                 metrics_dropdown):
+                 metrics_dropdown,
+                 selectedData):
     
 
     filtered_simulated = simulated.copy() 
+
+    # Select metric
+    if metrics_dropdown != None:
+        metric_string = metrics_dropdown
+    else:
+        metric_string = None
+
+    if selectedData is not None:
+        # details = [point['text'] for point in points]
+        selected_data = pd.DataFrame([point['customdata'] for point in selectedData['points']])
+        selected_data.columns = df.columns
+        lst_neighborhood = selected_data['neighbourhood_cleansed'].unique().tolist()
+        filtered_simulated = filtered_simulated[filtered_simulated['neighbourhood'].transform(lambda x: x in lst_neighborhood)]
+        return create_aggregated_time_series_plot(filtered_simulated, metric_string)
+
+    # other global filtering conditions in the sidebar
     # Filter for neighbourhood
     if neighbourhood_dropdown != None:
         filtered_simulated = filtered_simulated[filtered_simulated["neighbourhood"] == neighbourhood_dropdown]
@@ -441,12 +467,6 @@ def create_plot(neighbourhood_dropdown,
     if num_bathrooms_dropdown != None:
 
         filtered_simulated = filtered_simulated[filtered_simulated["number_of_bathrooms"] == num_bathrooms_dropdown]
-
-    # Select metric
-    if metrics_dropdown != None:
-        metric_string = metrics_dropdown
-    else:
-        metric_string = None
 
     return create_aggregated_time_series_plot(filtered_simulated, metric_string)
 
