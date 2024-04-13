@@ -150,12 +150,12 @@ def getOptionValues(eval_button, people_dropdown_eval,
                     latitude_input):
     statement = "Hi"
     new_df = pd.DataFrame(
-        {"longitude": float(longitude_input),
-         "latitude": float(latitude_input),
+        {"longitude": float(longitude_input) if longitude_input!='' and longitude_input is not None else None,
+         "latitude": float(latitude_input) if latitude_input!='' and latitude_input is not None else None,
          "accommodates": people_dropdown_eval,
          "room_type": roomtype_dropdown_eval,
-         "beds": float(num_beds_dropdown_eval),
-         "bathroom_adjusted": float(num_bathrooms_dropdown_eval)},
+         "beds": float(num_beds_dropdown_eval) if num_beds_dropdown_eval is not None else None,
+         "bathroom_adjusted": float(num_bathrooms_dropdown_eval) if num_bathrooms_dropdown_eval is not None else None},
          index=[0]
     )
     if "eval_button" == ctx.triggered_id:
