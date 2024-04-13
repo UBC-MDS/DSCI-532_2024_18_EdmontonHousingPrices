@@ -98,44 +98,61 @@ sidebar = html.Div([
         ])
 ])
 
-maindiv = html.Div(
-    id="first-div",
-    children=[
-        html.Div([
-        html.H4("Predicted Price per Night (CAD)"),
-        html.Hr(),
-        # dbc.Alert(["Please make sure to include Longitude and Latitude as a numeric data type."],
-        #           id="alert-fade",
-        #             dismissable=True,
-        #             is_open=True,
-        #             fade=True,
-        #             color="warning"),
-        dbc.Card(
-                dbc.CardBody([
-                    html.P("You did not input any values yet.", id="input_statement"),
-                    html.Div(id="user_inputs"),
-                    html.Div(id="prediction_card")], 
-                    style={"text-align":"center", "margin-right": "10px"}),
-                className="mb-4", color="light"
-            )
-        ], style={"margin-right": "20px"}),
-
-        html.Div([
-        html.H4("Input location"),
-        html.Hr(),
-        dbc.Card(
-            dbc.CardBody([
-                dbc.Row([
-                    dbc.Col([
-                        dcc.Graph(id="prediction_map", figure=create_empty_map(df))
-                    ])
+maindiv = html.Div([
+    html.H4("Predicted Price per Night (CAD)"),
+    html.Hr(),
+    dbc.Row([
+        dbc.Col([
+            html.P("You did not input any values yet.", id="input_statement"),
+            html.Div(id="user_inputs"),
+            html.Div(id="prediction_card")
+        ]),
+        dbc.Col([
+            html.H5("View in Map"),
+            html.Div([
+                dbc.Card([
+                    dcc.Graph(id="prediction_map", figure=create_empty_map(df))
                 ])
-            ]), 
-            className="mt-3"
-        )
-        ], style={"margin-right": "20px"}) 
-    ]
-)
+            ], style={"margin-right":"20px"})
+        ])
+    ])
+])
+
+# maindiv = html.Div(
+#     id="first-div",
+#     children=[
+#         html.Div([
+#         html.H4("Predicted Price per Night (CAD)"),
+#         html.Hr(),
+#         html.P("You did not input any values yet.", id="input_statement"),
+#         html.Div(id="user_inputs"),
+#         html.Div(id="prediction_card")
+#         # dbc.Card(
+#         #         dbc.CardBody([
+#         #             html.P("You did not input any values yet.", id="input_statement"),
+#         #             html.Div(id="user_inputs"),
+#         #             html.Div(id="prediction_card")], 
+#         #             style={"text-align":"center", "margin-right": "10px"}),
+#         #         className="mb-4", color="light"
+#         #     )
+#         ], style={"margin-right": "20px"}),
+
+#         html.Div([
+#         html.H4("View in Map"),
+#         html.Hr(),
+#         dbc.Card(
+#             dbc.CardBody([
+#                 dbc.Row([
+#                     dbc.Col([
+#                         dcc.Graph(id="prediction_map", figure=create_empty_map(df))
+#                     ])
+#                 ])
+#             ]), 
+#             className="mt-3"
+#         )
+#         ], style={"margin-right": "20px"}) 
+#     ]
+# )
 
 layout = html.Div(children=[
     menu.dropdown_menu,
@@ -159,7 +176,7 @@ layout = html.Div(children=[
      State("latitude_input", "value"),
      State("longitude_input", "value")]
 )
-def getOptionValues(eval_button, people_dropdown_eval, 
+def getOptionValues(n_clicks, people_dropdown_eval, 
                     roomtype_dropdown_eval, 
                     num_beds_dropdown_eval, 
                     num_bathrooms_dropdown_eval,
@@ -174,6 +191,8 @@ def getOptionValues(eval_button, people_dropdown_eval,
          "bathroom_adjusted": float(num_bathrooms_dropdown_eval)},
          index=[0]
     )
+    print(new_df["latitude"].item())
+    print(type(new_df["latitude"].item()))
     if "eval_button" == ctx.triggered_id:
 
         table_header = [
@@ -199,12 +218,13 @@ def getOptionValues(eval_button, people_dropdown_eval,
 
         input_guide =  html.Div(dbc.Row([
             dbc.Col([
-                html.H5("Your AirBnB Features:", style={"font_family": "arial"}),
-                # dbc.Alert(["Please make sure to include Longitude and Latitude as a numeric data type."],
-                #   id="alert-fade",
-                #     is_open=True,
-                #     fade=True,
-                #     color="warning"),
+                html.H5("List of Features", style={"font_family": "arial"}),
+                dbc.Alert(["If an input is missing, median value for the particular input is used in making prediction."],
+                  id="alert-fade",
+                    is_open=True,
+                    fade=True,
+                    color="warning",
+                    style={"fontSize": "14px"}),
             ]),
         ]))
 
@@ -214,6 +234,9 @@ def getOptionValues(eval_button, people_dropdown_eval,
         html.P(f"Based on the inputs, your predicted Value per Night is: ${pred_val[0]:.3f} CAD.", style={'fontSize': '15px'})
         ]
 
-        fig = create_prediction_map(new_df)
+        if n_clicks is None:
+            fig = create_empty_map(df)
+        else:
+            fig = create_prediction_map(new_df)
 
         return pred_alert, table, input_guide, fig
