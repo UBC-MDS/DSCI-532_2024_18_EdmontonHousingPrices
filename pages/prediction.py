@@ -192,6 +192,7 @@ def getOptionValues(n_clicks, people_dropdown_eval,
          index=[0]
     )
     print(new_df["latitude"].item())
+    print(type(new_df["latitude"].item()))
     if "eval_button" == ctx.triggered_id:
 
         table_header = [
