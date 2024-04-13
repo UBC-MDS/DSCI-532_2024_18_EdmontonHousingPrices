@@ -16,7 +16,12 @@ def create_map(df_filtered):
         lat=df_filtered["latitude"],
         lon=df_filtered["longitude"],
         mode="markers",
-        text=[str(df_filtered["neighbourhood_cleansed"][i]) + '<br>' + "Price: $" + str(df_filtered["price_adjusted"][i]) + '<br>' + "Accommodates: " + str(df_filtered["accommodates"][i]) for i in range(df_filtered.shape[0])],
+        text=[str(df_filtered["neighbourhood_cleansed"][i]) + '<br>' + 
+              "Price/ Night (CAD): $" + str(df_filtered["price_adjusted"][i]) + '<br>' + 
+              "Room Type: " + str(df_filtered["room_type"][i]) + '<br>' +
+              "Beds: " + str(df_filtered["beds"][i]) + '<br>' + 
+              "Baths: " + str(df_filtered["bathroom_adjusted"][i]) + '<br>' +
+              "Accommodates: " + str(df_filtered["accommodates"][i]) for i in range(df_filtered.shape[0])],
         hoverinfo='text',
         marker=dict(
             size=8,
@@ -56,9 +61,7 @@ def create_map(df_filtered):
     return fig
 
 def create_empty_map(df_filtered):
-    '''Creates an empty vancouver map'''
-   # df = df[["neighbourhood_cleansed", "accommodates", "price", "room_type", "beds", "bathrooms_text", "quarter","longitude", "latitude"]]
-    
+    '''Creates an empty Vancouver map'''
     df_filtered.reset_index(drop=True, inplace=True)
     
     fig = go.Figure()
@@ -86,8 +89,9 @@ def create_empty_map(df_filtered):
     return fig
 
 
-def create_prediction_map(df_filtered):
-    '''Maps one point, based on latitude inputs'''
+def create_prediction_map(df_filtered, pred_val_string):
+    '''Maps one point, based on longitude and latitude inputs'''
+    
     fig = go.Figure()
 
     # Add map marker
@@ -95,6 +99,12 @@ def create_prediction_map(df_filtered):
         lat=df_filtered["latitude"],
         lon=df_filtered["longitude"],
         mode="markers",
+        text=["Price / Night (CAD): $" + pred_val_string + '<br>' + 
+              "Room Type: " + str(df_filtered["room_type"][i]) + '<br>' +
+              "Beds: " + str(df_filtered["beds"][i]) + '<br>' + 
+              "Baths: " + str(df_filtered["bathroom_adjusted"][i]) + '<br>' +
+              "Accommodates: " + str(df_filtered["accommodates"][i]) for i in range(df_filtered.shape[0])],
+        hoverinfo='text',
         marker=dict(
             size=15,
             opacity=1,

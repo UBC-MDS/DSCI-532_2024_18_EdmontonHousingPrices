@@ -215,6 +215,7 @@ def getOptionValues(n_clicks, people_dropdown_eval,
                             striped=True)
 
         pred_val = predict_price(new_df)
+        pred_val_string = f"{pred_val[0]:.3f}"
 
         input_guide =  html.Div(dbc.Row([
             dbc.Col([
@@ -237,6 +238,6 @@ def getOptionValues(n_clicks, people_dropdown_eval,
         if n_clicks is None:
             fig = create_empty_map(df)
         else:
-            fig = create_prediction_map(new_df)
+            fig = create_prediction_map(new_df, pred_val_string)
 
         return pred_alert, table, input_guide, fig
