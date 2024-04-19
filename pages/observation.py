@@ -91,7 +91,7 @@ sidebar = html.Div([
                           html.Label("Room Type:", style={"color": "black"}),
                           dcc.Dropdown(id="roomtype_dropdown",
                                        options=[{"label": r, "value": r} for r in df["room_type"].unique().tolist()],
-                                       multi=False,
+                                       multi=True,
                                        style={"margin-bottom": "20px"})
                     ])
               ]),
@@ -120,7 +120,7 @@ sidebar = html.Div([
                           html.Label("Number of Beds:", style={"color": "black"}),
                           dcc.Dropdown(id="num_beds_dropdown",
                                        options=np.arange(start=1, stop=10, step=1).tolist(),
-                                       multi=False,
+                                       multi=True,
                                        style={"margin-bottom": "20px"})
                     ])
               ]),
@@ -130,7 +130,7 @@ sidebar = html.Div([
                           html.Label("Number of Bathrooms:", style={"color": "black"}),
                           dcc.Dropdown(id="num_bathrooms_dropdown",
                                        options=np.arange(start=0.5, stop=6, step=0.5).tolist(),
-                                       multi=False,
+                                       multi=True,
                                        style={"margin-bottom": "20px"})
                     ])
               ])
@@ -392,15 +392,15 @@ def get_location(neighbourhood_dropdown,
 
     # Filter for roomtype
     if roomtype_dropdown != None:
-        df_filtered = df_filtered[df_filtered["room_type"] == roomtype_dropdown]
+        df_filtered = df_filtered[df_filtered["room_type"].isin(roomtype_dropdown)]
 
     # Filter for number of rooms
     if num_beds_dropdown != None:
-        df_filtered = df_filtered[df_filtered["beds"] == num_beds_dropdown]
+        df_filtered = df_filtered[df_filtered["beds"].isin(num_beds_dropdown)]
 
     # Filter for number of rooms
     if num_bathrooms_dropdown != None:
-        df_filtered = df_filtered[df_filtered["bathroom_adjusted"] == num_bathrooms_dropdown]
+        df_filtered = df_filtered[df_filtered["bathroom_adjusted"].isin(num_bathrooms_dropdown)]
 
     fig = create_map(df_filtered)
     fig.update_layout(
@@ -485,14 +485,14 @@ def create_plot(neighbourhood_dropdown,
         filtered_simulated = filtered_simulated[(filtered_simulated["price"] >= int(price_slider[0])) & (filtered_simulated["price"] <= int(price_slider[1]))]
     # Filter for roomtype
     if roomtype_dropdown != None:
-        filtered_simulated = filtered_simulated[filtered_simulated["room_type"] == roomtype_dropdown]
+        filtered_simulated = filtered_simulated[filtered_simulated["room_type"].isin(roomtype_dropdown)]
     # Filter for number of rooms
     if num_beds_dropdown != None:
-        filtered_simulated = filtered_simulated[filtered_simulated["number_of_beds"] == num_beds_dropdown]
+        filtered_simulated = filtered_simulated[filtered_simulated["number_of_beds"].isin(num_beds_dropdown)]
 
     # Filter for number of rooms
     if num_bathrooms_dropdown != None:
-        filtered_simulated = filtered_simulated[filtered_simulated["number_of_bathrooms"] == num_bathrooms_dropdown]
+        filtered_simulated = filtered_simulated[filtered_simulated["number_of_bathrooms"].isin(num_bathrooms_dropdown)]
 
     # Check if the filtered data is empty
     if filtered_simulated.empty:
