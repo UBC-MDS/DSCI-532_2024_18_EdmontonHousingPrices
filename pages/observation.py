@@ -23,7 +23,7 @@ import plotly.express as px
 from src.bar_graph import temporary_fig, create_bar_graph
 
 import pandas as pd
-from src.map import create_map
+from src.map import create_map, create_empty_map
 
 dash.register_page(__name__, path="/", title="Observation")
 
@@ -408,6 +408,17 @@ def get_location(neighbourhood_dropdown,
         mapbox_zoom=10,
         mapbox_center={"lat": df_filtered["latitude"].mean(), "lon": df_filtered["longitude"].mean()}
     )
+
+    # if len(df_filtered) > 0:
+    #     fig = create_map(df_filtered)
+    #     fig.update_layout(
+    #         mapbox_style="carto-positron",
+    #         mapbox_zoom=10,
+    #         mapbox_center={"lat": df_filtered["latitude"].mean(), "lon": df_filtered["longitude"].mean()}
+    #     )
+    
+    # elif len(df_filtered) == 0: 
+    #     fig = create_empty_map(df)
 
     avg_accom = [
         dbc.CardHeader('Average Number of Accomodates (Guests)', style={"text-align": "center"}),
