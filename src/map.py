@@ -3,8 +3,9 @@ import pandas as pd
 
 def create_map(df_filtered):
     '''Outputs a map with inputs from sidebar'''
-    color_bins = [0, 150, 300, 700, float('inf')]
+    color_bins = [0, 150, 300, 700, 1200]
     color_palette = ['#FED976', '#FD8F3C', '#E3211C', '#7F0F27']
+    bin_labels = [f'${color_bins[i]} - ${color_bins[i + 1]}' for i in range(len(color_bins) - 1)]
     
     df_filtered.reset_index(drop=True, inplace=True)
     df_filtered['color'] = pd.cut(df_filtered['price_adjusted'], bins=color_bins, labels=color_palette)
@@ -12,42 +13,26 @@ def create_map(df_filtered):
     fig = go.Figure()
 
     # Add map markers
-    fig.add_trace(go.Scattermapbox(
-        lat=df_filtered["latitude"],
-        lon=df_filtered["longitude"],
-        mode="markers",
-        text=[str(df_filtered["neighbourhood_cleansed"][i]) + '<br>' +
-              "Price/ Night (CAD): $" + str(df_filtered["price_adjusted"][i]) + '<br>' + 
-              "Room Type: " + str(df_filtered["room_type"][i]) + '<br>' +
-              "Beds: " + str(df_filtered["beds"][i]) + '<br>' + 
-              "Baths: " + str(df_filtered["bathroom_adjusted"][i]) + '<br>' +
-              "Accommodates: " + str(df_filtered["accommodates"][i]) for i in range(df_filtered.shape[0])],
-        hoverinfo='text',
-        marker=dict(
-            size=8,
-            opacity=0.7,
-            color=df_filtered["color"],
-            showscale=False, 
-            cmin=0,
-            cmax=len(color_palette) - 1
-        ),
-        customdata=df_filtered,
-        showlegend=False  
-    ))
-
-    # Add invisible legend markers
     for i, color in enumerate(color_palette):
+        df_color = df_filtered[df_filtered['color'] == color]
         fig.add_trace(go.Scattermapbox(
-            lat=[0],
-            lon=[0],
-            mode='markers',
+            lat=df_color["latitude"],
+            lon=df_color["longitude"],
+            mode="markers",
+            text=[f'{df_color["neighbourhood_cleansed"].iloc[j]}<br>' +
+                  f'Price/ Night (CAD): ${df_color["price_adjusted"].iloc[j]}<br>' +
+                  f'Room Type: {df_color["room_type"].iloc[j]}<br>' +
+                  f'Beds: {df_color["beds"].iloc[j]}<br>' +
+                  f'Baths: {df_color["bathroom_adjusted"].iloc[j]}<br>' +
+                  f'Accommodates: {df_color["accommodates"].iloc[j]}' for j in range(df_color.shape[0])],
+            hoverinfo='text',
             marker=dict(
+                size=8,
+                opacity=0.7,
                 color=color,
-                size=10,  
-                opacity=1  
+                showscale=False
             ),
-            showlegend=True,
-            name=f'${color_bins[i]} - ${color_bins[i + 1]}'
+            name=bin_labels[i]
         ))
 
     # Update layout
