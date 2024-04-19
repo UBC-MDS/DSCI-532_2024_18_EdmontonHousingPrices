@@ -32,6 +32,7 @@ def create_map(df_filtered):
                 color=color,
                 showscale=False
             ),
+            customdata=df_color,
             name=bin_labels[i]
         ))
 
