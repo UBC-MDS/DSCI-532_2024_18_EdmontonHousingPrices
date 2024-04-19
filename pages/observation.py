@@ -27,15 +27,9 @@ from src.map import create_map
 
 dash.register_page(__name__, path="/", title="Observation")
 
-df = pd.read_csv("data/raw/listings.csv")
-df = df[df["host_location"] == "Vancouver, Canada"]
-df.dropna(subset=['host_location', 'price', 'bathrooms_text'], inplace=True)
-df = df[["neighbourhood_cleansed", "accommodates", "price", "room_type", "beds", "bathrooms_text", "quarter", "latitude", "longitude"]]
+df = pd.read_parquet("data/processed/listings.parquet")
 
-df["price_adjusted"] = df["price"].str.extract(r'([0-9.]+)', expand = False).astype(float)
-df["bathroom_adjusted"] = df["bathrooms_text"].str.extract(r'([0-9.]+)', expand = False).astype(float)
-
-simulated = pd.read_csv('data/raw/simulated.csv')
+simulated = pd.read_parquet('data/processed/simulated.parquet')
 
 default_guests = round(df["accommodates"].mean(), 2)
 default_price = round(df["price_adjusted"].mean(), 2)
