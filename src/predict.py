@@ -6,8 +6,9 @@ import joblib
 
 # Load the saved model
 model = joblib.load('models/price_model.pkl')  # see the notebook notebooks/data_model.ipynb for model training details
+memory = joblib.Memory("tmp", verbose=0)
 
-
+@memory.cache()
 def preprocess_data(data): # assumes the incoming data to be the same with the transformed data in observation.py
     # Predefined summary statistics
     mean_values = {
@@ -33,6 +34,7 @@ def preprocess_data(data): # assumes the incoming data to be the same with the t
     data['room_type'] = data['room_type'].astype('category')
     return data
 
+@memory.cache()
 def predict_price(data):
     # Preprocess the input data
     preprocessed_data = preprocess_data(data)

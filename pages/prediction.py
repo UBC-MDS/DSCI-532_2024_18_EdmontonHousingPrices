@@ -8,6 +8,7 @@ import dash
 from dash import dcc
 from dash.dependencies import Input, Output, State
 from app import app
+from app import cache
 from dash import Dash, html, dcc, dash_table, ctx, callback
 from dash import callback_context
 import numpy as np
@@ -20,14 +21,7 @@ import plotly.express as px
 import pandas as pd
 dash.register_page(__name__, path="/", title="Prediction")
 
-df = pd.read_csv("data/raw/listings.csv")
-df = df[df["host_location"] == "Vancouver, Canada"]
-df.dropna(subset=['host_location', 'price', 'bathrooms_text'], inplace=True)
-
-df = df[["neighbourhood_cleansed", "accommodates", "price", "room_type", "beds", "bathrooms_text", "quarter","longitude", "latitude"]]
-
-df["price_adjusted"] = df["price"].str.extract(r'([0-9.]+)', expand = False).astype(float)
-df["bathroom_adjusted"] = df["bathrooms_text"].str.extract(r'([0-9.]+)', expand = False).astype(float)
+df = pd.read_parquet("data/processed/listings.parquet")
 
 
 sidebar = html.Div([
@@ -176,6 +170,7 @@ layout = html.Div(children=[
      State("latitude_input", "value"),
      State("longitude_input", "value")]
 )
+@cache.memoize()
 def getOptionValues(n_clicks, people_dropdown_eval, 
                     roomtype_dropdown_eval, 
                     num_beds_dropdown_eval, 
