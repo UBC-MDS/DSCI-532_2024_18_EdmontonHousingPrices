@@ -46,7 +46,7 @@ sidebar = html.Div([
                     dbc.Col([
                           html.Label("Select Latitude:", style={"color": "black"}),
                         #   dbc.Input(id="latitude_input", placeholder="Enter in data type float", type="float", style={"margin-bottom": "20px"})
-                          dcc.Slider(id="longitude_input", min=49.0, max=49.5, value=49.25, step=0.1)
+                          dcc.Slider(id="latitude_input", min=49.0, max=49.5, value=49.25, step=0.1)
                     ])
               ]),
 
