@@ -11,6 +11,7 @@ altair==5.3.*
 pandas==2.2.*
 joblib==1.3.*
 scikit-learn==1.3.*
+pyarrow==15.0.2
 
 # Note: gunicorn is included as it is required for Render and many other web services.
 # It is a HTTP server specifically for Python web applications and handles communication
