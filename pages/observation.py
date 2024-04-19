@@ -255,22 +255,6 @@ maindiv = html.Div(
             html.Hr(),
             html.P(
                 dbc.Container([
-                    
-        # dbc.Row([
-        #     dbc.Col([
-        #         dbc.Alert(
-        #             ["Summary statistics are calculated based on the filters that are applied.",
-        #              html.Br(),
-        #              "If no filter is applied, summary statistics are not shown."],
-        #             id="alert-fade",
-        #             dismissable=True,
-        #             is_open=True,
-        #             fade=True,
-        #             color="warning",
-        #             style={'fontSize': '13px'}
-        #         ),
-        #     ])
-        # ]),
 
         dbc.Card([dbc.CardHeader(
             dbc.Tabs([
@@ -365,6 +349,8 @@ def get_location(neighbourhood_dropdown,
                  quarter_checklist,
                  selectedData,
                  average_radio):
+    
+    df_filtered = df
 
     if selectedData is not None:
         # details = [point['text'] for point in points]
@@ -372,10 +358,10 @@ def get_location(neighbourhood_dropdown,
         selected_data.columns = df.columns
         df_filtered = selected_data
     
-    if quarter_checklist != None:
+    if quarter_checklist is not None:
         df_filtered = df_filtered[df_filtered["quarter"].isin(quarter_checklist)]
 
-    if quarter_checklist == None:
+    if quarter_checklist is None:
         df_filtered = df_filtered.copy()
 
     # Filter for neighbourhood
@@ -402,23 +388,16 @@ def get_location(neighbourhood_dropdown,
     if num_bathrooms_dropdown != None:
         df_filtered = df_filtered[df_filtered["bathroom_adjusted"] == num_bathrooms_dropdown]
 
-    fig = create_map(df_filtered)
-    fig.update_layout(
-        mapbox_style="carto-positron",
-        mapbox_zoom=10,
-        mapbox_center={"lat": df_filtered["latitude"].mean(), "lon": df_filtered["longitude"].mean()}
-    )
-
-    # if len(df_filtered) > 0:
-    #     fig = create_map(df_filtered)
-    #     fig.update_layout(
-    #         mapbox_style="carto-positron",
-    #         mapbox_zoom=10,
-    #         mapbox_center={"lat": df_filtered["latitude"].mean(), "lon": df_filtered["longitude"].mean()}
-    #     )
+    if len(df_filtered) > 0:
+        fig = create_map(df_filtered)
+        fig.update_layout(
+            mapbox_style="carto-positron",
+            mapbox_zoom=10,
+            mapbox_center={"lat": df_filtered["latitude"].mean(), "lon": df_filtered["longitude"].mean()}
+        )
     
-    # elif len(df_filtered) == 0: 
-    #     fig = create_empty_map(df)
+    elif len(df_filtered) == 0: 
+        fig = create_empty_map(df)
 
     avg_accom = [
         dbc.CardHeader('Average Number of Accomodates (Guests)', style={"text-align": "center"}),
