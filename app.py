@@ -3,6 +3,9 @@ import dash_bootstrap_components as dbc
 from dash import Dash, html, dcc, dash_table, ctx
 import pandas as pd
 
+import sys
+sys.path.append('../')
+
 df = pd.read_csv("data/raw/listings.csv")
 
 app = dash.Dash(__name__,
