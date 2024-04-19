@@ -371,12 +371,18 @@ def get_location(neighbourhood_dropdown,
                  quarter_checklist,
                  selectedData,
                  average_radio):
+
+    if selectedData is not None:
+        # details = [point['text'] for point in points]
+        selected_data = pd.DataFrame([point['customdata'] for point in selectedData['points']])
+        selected_data.columns = df.columns
+        df_filtered = selected_data
     
     if quarter_checklist != None:
-        df_filtered = df[df["quarter"].isin(quarter_checklist)]
+        df_filtered = df_filtered[df_filtered["quarter"].isin(quarter_checklist)]
 
     if quarter_checklist == None:
-        df_filtered = df.copy()
+        df_filtered = df_filtered.copy()
 
     # Filter for neighbourhood
     if neighbourhood_dropdown != None:
@@ -408,12 +414,6 @@ def get_location(neighbourhood_dropdown,
         mapbox_zoom=10,
         mapbox_center={"lat": df_filtered["latitude"].mean(), "lon": df_filtered["longitude"].mean()}
     )
-
-    if selectedData is not None:
-        # details = [point['text'] for point in points]
-        selected_data = pd.DataFrame([point['customdata'] for point in selectedData['points']])
-        selected_data.columns = df.columns
-        df_filtered = selected_data
 
     avg_accom = [
         dbc.CardHeader('Average Number of Accomodates (Guests)', style={"text-align": "center"}),
@@ -476,7 +476,7 @@ def create_plot(neighbourhood_dropdown,
         selected_data.columns = df.columns
         lst_neighborhood = selected_data['neighbourhood_cleansed'].unique().tolist()
         filtered_simulated = filtered_simulated[filtered_simulated['neighbourhood'].transform(lambda x: x in lst_neighborhood)]
-        return create_aggregated_time_series_plot(filtered_simulated, metric_string)
+        # return create_aggregated_time_series_plot(filtered_simulated, metric_string)
 
     # other global filtering conditions in the sidebar
     # Filter for neighbourhood
