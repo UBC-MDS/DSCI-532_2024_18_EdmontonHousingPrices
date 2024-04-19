@@ -500,6 +500,25 @@ def create_plot(neighbourhood_dropdown,
     if num_bathrooms_dropdown != None:
         filtered_simulated = filtered_simulated[filtered_simulated["number_of_bathrooms"] == num_bathrooms_dropdown]
 
+    # Check if the filtered data is empty
+    if filtered_simulated.empty:
+        # Return a figure with a message indicating no data
+        return {
+            'data': [],
+            'layout': go.Layout(
+                title='No data available for the selected filters.',
+                xaxis={'visible': False},
+                yaxis={'visible': False},
+                annotations=[{
+                    'text': 'No data available',
+                    'xref': 'paper',
+                    'yref': 'paper',
+                    'showarrow': False,
+                    'font': {'size': 28}
+                }]
+            )
+        }
+
     return create_aggregated_time_series_plot(filtered_simulated, metric_string)
 
 @app.callback(
