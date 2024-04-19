@@ -27,15 +27,9 @@ from src.map import create_map
 
 dash.register_page(__name__, path="/", title="Observation")
 
-df = pd.read_csv("data/raw/listings.csv")
-df = df[df["host_location"] == "Vancouver, Canada"]
-df.dropna(subset=['host_location', 'price', 'bathrooms_text'], inplace=True)
-df = df[["neighbourhood_cleansed", "accommodates", "price", "room_type", "beds", "bathrooms_text", "quarter", "latitude", "longitude"]]
+df = pd.read_parquet("data/processed/listings.parquet")
 
-df["price_adjusted"] = df["price"].str.extract(r'([0-9.]+)', expand = False).astype(float)
-df["bathroom_adjusted"] = df["bathrooms_text"].str.extract(r'([0-9.]+)', expand = False).astype(float)
-
-simulated = pd.read_csv('data/raw/simulated.csv')
+simulated = pd.read_parquet('data/processed/simulated.parquet')
 
 default_guests = round(df["accommodates"].mean(), 2)
 default_price = round(df["price_adjusted"].mean(), 2)
@@ -371,12 +365,18 @@ def get_location(neighbourhood_dropdown,
                  quarter_checklist,
                  selectedData,
                  average_radio):
+
+    if selectedData is not None:
+        # details = [point['text'] for point in points]
+        selected_data = pd.DataFrame([point['customdata'] for point in selectedData['points']])
+        selected_data.columns = df.columns
+        df_filtered = selected_data
     
     if quarter_checklist != None:
-        df_filtered = df[df["quarter"].isin(quarter_checklist)]
+        df_filtered = df_filtered[df_filtered["quarter"].isin(quarter_checklist)]
 
     if quarter_checklist == None:
-        df_filtered = df.copy()
+        df_filtered = df_filtered.copy()
 
     # Filter for neighbourhood
     if neighbourhood_dropdown != None:
@@ -408,12 +408,6 @@ def get_location(neighbourhood_dropdown,
         mapbox_zoom=10,
         mapbox_center={"lat": df_filtered["latitude"].mean(), "lon": df_filtered["longitude"].mean()}
     )
-
-    if selectedData is not None:
-        # details = [point['text'] for point in points]
-        selected_data = pd.DataFrame([point['customdata'] for point in selectedData['points']])
-        selected_data.columns = df.columns
-        df_filtered = selected_data
 
     avg_accom = [
         dbc.CardHeader('Average Number of Accomodates (Guests)', style={"text-align": "center"}),
@@ -476,7 +470,7 @@ def create_plot(neighbourhood_dropdown,
         selected_data.columns = df.columns
         lst_neighborhood = selected_data['neighbourhood_cleansed'].unique().tolist()
         filtered_simulated = filtered_simulated[filtered_simulated['neighbourhood'].transform(lambda x: x in lst_neighborhood)]
-        return create_aggregated_time_series_plot(filtered_simulated, metric_string)
+        # return create_aggregated_time_series_plot(filtered_simulated, metric_string)
 
     # other global filtering conditions in the sidebar
     # Filter for neighbourhood
@@ -499,6 +493,25 @@ def create_plot(neighbourhood_dropdown,
     # Filter for number of rooms
     if num_bathrooms_dropdown != None:
         filtered_simulated = filtered_simulated[filtered_simulated["number_of_bathrooms"] == num_bathrooms_dropdown]
+
+    # Check if the filtered data is empty
+    if filtered_simulated.empty:
+        # Return a figure with a message indicating no data
+        return {
+            'data': [],
+            'layout': go.Layout(
+                title='No data available for the selected filters.',
+                xaxis={'visible': False},
+                yaxis={'visible': False},
+                annotations=[{
+                    'text': 'No data available',
+                    'xref': 'paper',
+                    'yref': 'paper',
+                    'showarrow': False,
+                    'font': {'size': 28}
+                }]
+            )
+        }
 
     return create_aggregated_time_series_plot(filtered_simulated, metric_string)
 
