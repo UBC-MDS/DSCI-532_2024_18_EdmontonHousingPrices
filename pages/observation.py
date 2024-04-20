@@ -8,6 +8,7 @@ import dash
 from dash import dcc
 from dash.dependencies import Input, Output, State
 from app import app
+from app import cache
 from dash import Dash, html, dcc, dash_table, ctx
 from dash import callback_context
 import numpy as np
@@ -339,7 +340,7 @@ layout = html.Div(children=[
      Input("average_radio", "value")
      ],
      prevent_intial_call=True)
-
+@cache.memoize()
 def get_location(neighbourhood_dropdown, 
                  people_dropdown, 
                  price_slider, 
@@ -436,6 +437,7 @@ def get_location(neighbourhood_dropdown,
      Input("map", "selectedData")
      ],
      prevent_intial_call=True)
+@cache.memoize()
 def create_plot(neighbourhood_dropdown, 
                  people_dropdown, 
                  price_slider, 
@@ -459,7 +461,8 @@ def create_plot(neighbourhood_dropdown,
         selected_data = pd.DataFrame([point['customdata'] for point in selectedData['points']])
         selected_data.columns = df.columns
         lst_neighborhood = selected_data['neighbourhood_cleansed'].unique().tolist()
-        filtered_simulated = filtered_simulated[filtered_simulated['neighbourhood'].transform(lambda x: x in lst_neighborhood)]
+        # replace apply and transform with isin()
+        filtered_simulated = filtered_simulated[filtered_simulated['neighbourhood'].isin(lst_neighborhood)]
         # return create_aggregated_time_series_plot(filtered_simulated, metric_string)
 
     # other global filtering conditions in the sidebar
@@ -509,6 +512,7 @@ def create_plot(neighbourhood_dropdown,
     Output('metric-description', 'children'),
     [Input('metrics_dropdown', 'value')]
 )
+@cache.memoize()
 def update_description(selected_metric):
     description = real_life_meaning_mapping[selected_metric]['description']
     return description
