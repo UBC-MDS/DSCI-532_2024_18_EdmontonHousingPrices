@@ -3,6 +3,7 @@
 
 **Group members**: Jenny Lee (@jlee2843), Wenyu Nie (@wenyunie),Ella Hein (@ella-irene), Kiersten Gilberg (@Kierst01)
 
+![DEMO2 GIF](img/demo2.gif)
 ![DEMO GIF](img/demo.gif)
 
 ## Motivation
@@ -32,23 +33,24 @@ When opening the issue, ensure to go through the appropriate labeling step to ca
 To install all Python dependencies necessary for running the app locally, you can utilize the `environment.yml` file. This file contains a list of dependencies required for the project. You can install them using a package manager such as Conda. List of dependencies needed for this dashboard are:
 
 ```
-  - python=3.8
-  - dash
-  - dash-core-components
-  - dash-html-components
-  - dash-renderer
-  - dash-table
-  - plotly
-  - pandas
-  - numpy
-  - scipy
-  - gunicorn # For deployment
-  - joblib
-  - pip
+  - python=3.8.19
+  - dash=2.16.1
+  - dash-core-components=2.0.0
+  - dash-html-components=2.0.0
+  - dash-renderer=1.9.1
+  - dash-table=5.0.0
+  - plotly=5.19.0
+  - pandas=2.0.3
+  - numpy=1.24.4
+  - scipy=1.10.1
+  - gunicorn=21.2.0 # For deployment
+  - joblib=1.3.2
+  - pip=24.0
   - pip:
-    - flask-caching
-    - scikit-learn
-    - dash-bootstrap-components
+    - flask-caching==2.1.0
+    - scikit-learn==1.3.2
+    - dash-bootstrap-components==1.5.0
+    - pyarrow==15.0.2
 ```
 
 ##### Steps to Follow for Installing Dependencies:
