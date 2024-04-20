@@ -42,4 +42,23 @@ def create_aggregated_time_series_plot(df, y_variable=None):
     )
     fig.update_xaxes(title_text='Quarter', tickangle=-45)
     fig.update_yaxes(title_text=f'Average {y_name}')
+
+    fig.update_layout(
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)'
+            )
+    
+    fig.update_xaxes(showline=True,
+         linewidth=1,
+         linecolor='black',
+         gridcolor="#E5E4E2",
+         mirror=True)
+    
+    fig.update_yaxes(showline=True,
+         linewidth=1,
+         linecolor='black',
+         gridcolor="#E5E4E2",
+         mirror=True,
+         title=dict(font=dict(size=13)))
+    
     return fig

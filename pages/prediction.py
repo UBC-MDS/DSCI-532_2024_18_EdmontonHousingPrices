@@ -31,15 +31,33 @@ sidebar = html.Div([
             dbc.Row([
                 dbc.Col([
                     html.Label("Select Longitude:", style={"color": "black"}),
-                    dbc.Input(id="longitude_input", placeholder="Enter in data type float", type="float", style={"margin-bottom": "20px"}),
-                ])
+                    dcc.Slider(-123.250, -123.0, value=-123.15, id="longitude_input", marks= {
+                        -123.25: {'label': '-123.25'},
+                        -123.20: {'label': '-123.20'},
+                        -123.15: {'label': '-123.15'},
+                        -123.10: {'label': '-123.10'},
+                        -123.05: {'label': '-123.05'},
+                        -123: {'label': '-123.0'},
+                    },
+                               tooltip={"placement": "bottom", "always_visible": False},
+                    included=False,)
+                ], style={"margin-bottom":"20px"})
             ]),
 
               dbc.Row([
                     dbc.Col([
                           html.Label("Select Latitude:", style={"color": "black"}),
-                          dbc.Input(id="latitude_input", placeholder="Enter in data type float", type="float", style={"margin-bottom": "20px"})
-                    ])
+                          dcc.Slider(49.0, 49.5, value=49.2, id="latitude_input", marks={
+                              49: {'label': '49.0'},
+                              49.1: {'label': '49.1'},
+                              49.2: {'label': '49.2'},
+                              49.3: {'label': '49.3'},
+                              49.4: {'label': '49.4'},
+                              49.5: {'label': '49.5'},
+                          },
+                               tooltip={"placement": "bottom", "always_visible": False},
+                                included=False)
+                    ], style={"margin-bottom":"20px"})
               ]),
 
               dbc.Row([
