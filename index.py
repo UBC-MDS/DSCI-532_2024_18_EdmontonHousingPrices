@@ -11,6 +11,8 @@ url_content_layout = html.Div(children=[
     html.Div(id="output-div")
 ])
 
+server = app.server
+
 app.layout = url_content_layout
 
 app.validation_layout = html.Div([
