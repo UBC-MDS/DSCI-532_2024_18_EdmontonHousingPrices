@@ -4,13 +4,7 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
-df = pd.read_csv("data/raw/listings.csv")
-df = df[df["host_location"] == "Vancouver, Canada"]
-df.dropna(subset=['host_location', 'price', 'bathrooms_text'], inplace=True)
-df = df[["neighbourhood_cleansed", "accommodates", "price", "room_type", "beds", "bathrooms_text", "quarter", "latitude", "longitude"]]
-
-df["price_adjusted"] = df["price"].str.extract(r'([0-9.]+)', expand = False).astype(float)
-df["bathroom_adjusted"] = df["bathrooms_text"].str.extract(r'([0-9.]+)', expand = False).astype(float)
+df = pd.read_parquet("data/processed/listings.parquet")
 
 temporary_fig = make_subplots(rows=1, cols=2)
 
