@@ -4,23 +4,17 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
-df = pd.read_csv("data/raw/listings.csv")
-df = df[df["host_location"] == "Vancouver, Canada"]
-df.dropna(subset=['host_location', 'price', 'bathrooms_text'], inplace=True)
-df = df[["neighbourhood_cleansed", "accommodates", "price", "room_type", "beds", "bathrooms_text", "quarter", "latitude", "longitude"]]
-
-df["price_adjusted"] = df["price"].str.extract(r'([0-9.]+)', expand = False).astype(float)
-df["bathroom_adjusted"] = df["bathrooms_text"].str.extract(r'([0-9.]+)', expand = False).astype(float)
+df = pd.read_parquet("data/processed/listings.parquet")
 
 temporary_fig = make_subplots(rows=1, cols=2)
 
 categorical_variables = ["neighbourhood_cleansed", "room_type"]
 
 def create_bar_graph(df):
-      fig = make_subplots(rows=2, cols=2, subplot_titles=("Neighbourhood by Count", 
-                                                          "Room Type by Count",
-                                                          "Number of Available Beds by Count",
-                                                          "Number of Available Baths by Count"),
+      fig = make_subplots(rows=2, cols=2, subplot_titles=("Neighbourhoods", 
+                                                          "Room Types",
+                                                          "Number of Available Beds",
+                                                          "Number of Available Baths"),
                                                           vertical_spacing = 0.37)
 
       neighbourhood_df = pd.DataFrame(df["neighbourhood_cleansed"].value_counts())
@@ -50,7 +44,8 @@ def create_bar_graph(df):
 
       fig.update_layout(
             plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)'
+            paper_bgcolor='rgba(0,0,0,0)',
+            title={"font":{'size': 10}}
             )
       
       fig.update_layout(
@@ -62,10 +57,12 @@ def create_bar_graph(df):
          mirror=True)
 
       fig.update_yaxes(showline=True,
+            title_standoff = 1,
          linewidth=1,
          linecolor='black',
          mirror=True,
-         title=dict(font=dict(size=13)))
+         title=dict(font=dict(size=11),
+                    text="Count"))
       
       return fig
 

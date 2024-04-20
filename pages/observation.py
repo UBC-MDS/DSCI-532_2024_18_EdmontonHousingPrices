@@ -9,6 +9,7 @@ from dash import dcc
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 from app import app
+from app import cache
 from dash import Dash, html, dcc, dash_table, ctx
 from dash import callback_context
 import numpy as np
@@ -348,7 +349,7 @@ layout = html.Div(children=[
      Input("reset_button", "n_clicks") # add this line to keep track of the previous selection
      ],  
      prevent_intial_call=True)
-
+@cache.memoize()
 def get_location(neighbourhood_dropdown, 
                  people_dropdown, 
                  price_slider, 
@@ -456,6 +457,7 @@ def get_location(neighbourhood_dropdown,
      Input("reset_button", "n_clicks")
      ],
      prevent_intial_call=True)
+@cache.memoize()
 def create_plot(neighbourhood_dropdown, 
                  people_dropdown, 
                  price_slider, 
@@ -538,6 +540,7 @@ def create_plot(neighbourhood_dropdown,
     Output('metric-description', 'children'),
     [Input('metrics_dropdown', 'value')]
 )
+@cache.memoize()
 def update_description(selected_metric):
     description = real_life_meaning_mapping[selected_metric]['description']
     return description

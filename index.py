@@ -3,6 +3,7 @@ from dash import dcc
 from dash.dependencies import Input, Output
 
 from app import app
+from app import cache
 from pages import observation, prediction, credentials
 
 url_content_layout = html.Div(children=[
@@ -22,6 +23,7 @@ app.validation_layout = html.Div([
 @app.callback(
     Output(component_id="output-div",component_property="children"),
     Input(component_id="url",component_property="pathname"))
+@cache.memoize()
 def update_output_div(pathname):
     if pathname == "/":
         return observation.layout
