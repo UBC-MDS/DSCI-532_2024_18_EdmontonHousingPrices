@@ -7,6 +7,7 @@ import menu
 import dash
 from dash import dcc
 from dash.dependencies import Input, Output, State
+from dash.exceptions import PreventUpdate
 from app import app
 from app import cache
 from dash import Dash, html, dcc, dash_table, ctx
@@ -28,15 +29,17 @@ from src.map import create_map, create_empty_map
 
 dash.register_page(__name__, path="/", title="Observation")
 
-df = pd.read_parquet("data/processed/listings.parquet")
+df = pd.read_parquet("data/processed/listings.parquet") ### This is the processed version of our data sufficent for all functionalities
 
-simulated = pd.read_parquet('data/processed/simulated.parquet')
+simulated = pd.read_parquet('data/processed/simulated.parquet') ### This is the simulated data for the trend section
 
 default_guests = round(df["accommodates"].mean(), 2)
 default_price = round(df["price_adjusted"].mean(), 2)
 default_beds = round(df["beds"].mean(), 2)
 default_baths = round(df["bathroom_adjusted"].mean(), 2)
 
+### This is a special column-selected version for list visualization but not exhaustive for other plotting functions
+# so we do not store this data directly as processed data
 df_cleaned = df[["quarter", "neighbourhood_cleansed", "accommodates", "price", "room_type", "beds", "bathrooms_text"]]
 df_cleaned.columns = ["Quarter", "Neighbourhood", "Number of Guests", "Price (CAD)", "Room Type", "Available Beds", "Available Bathrooms"]
 
@@ -52,6 +55,8 @@ ALLOWED_TYPES = (
     "text", "number", "password", "email", "search",
     "tel", "url", "range", "hidden",
 )
+
+reset_button = html.Button('Reset the Map Selection', id='reset_button', n_clicks=0)
 
 sidebar = html.Div([
         html.H4("Apply Filter", style={"margin-left": "14px"}),
@@ -244,6 +249,9 @@ maindiv = html.Div(
                 dbc.Tab(tab1_content, label="View as List", tab_style={"marginRight": "20px"})
                 ], active_tab="tab-0")
         ),
+        html.Div([
+            dbc.Button("Reset Map Selection", id="reset_button", color="secondary", className="mb-3", style={'background-color': '#E8582E',"width": "15%"})  # Adding reset button below the tabs
+        ], style={'display': 'flex', 'justifyContent': 'flex-end'})
         ], className="mt-3",
         style={"margin-left": "20px",
                "margin-right": "20px",
@@ -337,8 +345,9 @@ layout = html.Div(children=[
      Input("num_bathrooms_dropdown", "value"),
      Input("quarter_checklist", "value"),
      Input("map", "selectedData"),
-     Input("average_radio", "value")
-     ],
+     Input("average_radio", "value"),
+     Input("reset_button", "n_clicks") # add this line to keep track of the previous selection
+     ],  
      prevent_intial_call=True)
 @cache.memoize()
 def get_location(neighbourhood_dropdown, 
@@ -349,24 +358,34 @@ def get_location(neighbourhood_dropdown,
                  num_bathrooms_dropdown,
                  quarter_checklist,
                  selectedData,
-                 average_radio):
+                 average_radio,
+                 reset_clicks):
     
-    df_filtered = df
+    df_filtered = df.copy()
 
-    if selectedData is not None:
-        # details = [point['text'] for point in points]
-        selected_data = pd.DataFrame([point['customdata'] for point in selectedData['points']])
-        selected_data.columns = df.columns
-        df_filtered = selected_data
-    
-    if quarter_checklist is not None:
+    # Check if filters are modified or if a fresh map selection is made
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        raise PreventUpdate
+    input_id = ctx.triggered[0]['prop_id'].split('.')[0]
+
+    # Reset functionality
+    if input_id != "reset_button": # only narrowing down to selected area when it is not reset
+        if selectedData:
+            selected_data = pd.DataFrame([point['customdata'] for point in selectedData['points']])
+            selected_data.columns = df.columns
+            df_filtered = selected_data
+
+    # but we would honor the sidebar filters no matter we reset or honor the selected area
+    # Apply other filters
+    if quarter_checklist is not None and len(quarter_checklist)>0:
         df_filtered = df_filtered[df_filtered["quarter"].isin(quarter_checklist)]
 
-    if quarter_checklist is None:
-        df_filtered = df_filtered.copy()
+    # if quarter_checklist is None:
+    #     df_filtered = df_filtered.copy()
 
     # Filter for neighbourhood
-    if neighbourhood_dropdown != None:
+    if neighbourhood_dropdown != None and len(neighbourhood_dropdown)>0:
         df_filtered = df_filtered[df_filtered["neighbourhood_cleansed"].isin(neighbourhood_dropdown)]
 
     # Filter for number of people
@@ -378,15 +397,15 @@ def get_location(neighbourhood_dropdown,
         df_filtered = df_filtered[(df_filtered["price_adjusted"] >= int(price_slider[0])) & (df_filtered["price_adjusted"] <= int(price_slider[1]))]
 
     # Filter for roomtype
-    if roomtype_dropdown != None:
+    if roomtype_dropdown != None and len(roomtype_dropdown)>0:
         df_filtered = df_filtered[df_filtered["room_type"].isin(roomtype_dropdown)]
 
     # Filter for number of rooms
-    if num_beds_dropdown != None:
+    if num_beds_dropdown != None and len(num_beds_dropdown)>0:
         df_filtered = df_filtered[df_filtered["beds"].isin(num_beds_dropdown)]
 
     # Filter for number of rooms
-    if num_bathrooms_dropdown != None:
+    if num_bathrooms_dropdown != None and len(num_bathrooms_dropdown)>0:
         df_filtered = df_filtered[df_filtered["bathroom_adjusted"].isin(num_bathrooms_dropdown)]
 
     if len(df_filtered) > 0:
@@ -434,7 +453,8 @@ def get_location(neighbourhood_dropdown,
      Input("num_beds_dropdown", "value"),
      Input("num_bathrooms_dropdown", "value"),
      Input("metrics_dropdown", "value"),
-     Input("map", "selectedData")
+     Input("map", "selectedData"),
+     Input("reset_button", "n_clicks")
      ],
      prevent_intial_call=True)
 @cache.memoize()
@@ -445,7 +465,8 @@ def create_plot(neighbourhood_dropdown,
                  num_beds_dropdown, 
                  num_bathrooms_dropdown,
                  metrics_dropdown,
-                 selectedData):
+                 selectedData,
+                 reset_clicks):
     
 
     filtered_simulated = simulated.copy() 
@@ -456,18 +477,25 @@ def create_plot(neighbourhood_dropdown,
     else:
         metric_string = None
 
-    if selectedData is not None:
-        # details = [point['text'] for point in points]
-        selected_data = pd.DataFrame([point['customdata'] for point in selectedData['points']])
-        selected_data.columns = df.columns
-        lst_neighborhood = selected_data['neighbourhood_cleansed'].unique().tolist()
-        # replace apply and transform with isin()
-        filtered_simulated = filtered_simulated[filtered_simulated['neighbourhood'].isin(lst_neighborhood)]
-        # return create_aggregated_time_series_plot(filtered_simulated, metric_string)
+    # Check if filters are modified or if a fresh map selection is made
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        raise PreventUpdate
+    input_id = ctx.triggered[0]['prop_id'].split('.')[0]
+
+    # Reset functionality
+    if input_id != "reset_button": # only narrowing down to selected area when it is not reset
+        if selectedData is not None:
+            # details = [point['text'] for point in points]
+            selected_data = pd.DataFrame([point['customdata'] for point in selectedData['points']])
+            selected_data.columns = df.columns
+            lst_neighborhood = selected_data['neighbourhood_cleansed'].unique().tolist()
+            filtered_simulated = filtered_simulated[filtered_simulated['neighbourhood'].transform(lambda x: x in lst_neighborhood)]
+            # return create_aggregated_time_series_plot(filtered_simulated, metric_string)
 
     # other global filtering conditions in the sidebar
     # Filter for neighbourhood
-    if neighbourhood_dropdown != None:
+    if neighbourhood_dropdown != None and len(neighbourhood_dropdown)>0:
         filtered_simulated = filtered_simulated[filtered_simulated["neighbourhood"].isin(neighbourhood_dropdown)]
 
     # Filter for number of people
@@ -477,14 +505,14 @@ def create_plot(neighbourhood_dropdown,
     if price_slider != None:
         filtered_simulated = filtered_simulated[(filtered_simulated["price"] >= int(price_slider[0])) & (filtered_simulated["price"] <= int(price_slider[1]))]
     # Filter for roomtype
-    if roomtype_dropdown != None:
+    if roomtype_dropdown != None and len(roomtype_dropdown)>0:
         filtered_simulated = filtered_simulated[filtered_simulated["room_type"].isin(roomtype_dropdown)]
     # Filter for number of rooms
-    if num_beds_dropdown != None:
+    if num_beds_dropdown != None and len(num_beds_dropdown)>0:
         filtered_simulated = filtered_simulated[filtered_simulated["number_of_beds"].isin(num_beds_dropdown)]
 
     # Filter for number of rooms
-    if num_bathrooms_dropdown != None:
+    if num_bathrooms_dropdown != None and len(num_bathrooms_dropdown)>0:
         filtered_simulated = filtered_simulated[filtered_simulated["number_of_bathrooms"].isin(num_bathrooms_dropdown)]
 
     # Check if the filtered data is empty
